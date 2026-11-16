@@ -96,7 +96,7 @@ export function FitFlow() {
         return;
       }
       profileStore.set(profile);
-      router.push("/fit/result");
+      router.push("/fit/result?from=survey");
       return;
     }
     router.push(`/fit?step=${(step ?? 0) + 1}`);

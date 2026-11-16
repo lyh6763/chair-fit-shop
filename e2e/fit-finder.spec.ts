@@ -6,7 +6,10 @@ test.describe("Fit Finder", () => {
     await completeFitFinder(page, { heightDelta: 2 });
 
     // 172cm × 2.5 + 25 = 455mm
-    await expect(page.getByRole("heading", { level: 1, name: "당신의 권장 좌판 높이" })).toBeVisible();
+    const heading = page.getByRole("heading", { level: 1, name: "당신의 권장 좌판 높이" });
+    await expect(heading).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("list", { name: "입력한 정보" }).getByRole("link").first()).toBeFocused();
     await expect(page.locator("main")).toContainText("455mm");
 
     // 예산 80만 원 안에서 9시간·업무·허리 → D3-HS(78만 원)
@@ -20,6 +23,7 @@ test.describe("Fit Finder", () => {
     // 결과는 새로고침해도 유지된다(localStorage)
     await page.reload();
     await expect(top).toBeVisible();
+    await expect(heading).not.toBeFocused();
   });
 
   test("deletes the saved profile and lets the visitor undo it", async ({ page }) => {

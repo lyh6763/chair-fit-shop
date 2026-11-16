@@ -46,11 +46,12 @@ export function ResultSkeleton() {
 
 /** `?share=`가 있으면 공유받은 결과를, 없으면 이 브라우저에 저장된 내 결과를 보여준다. */
 export function FitResult() {
-  const shareCode = useSearchParams().get("share");
-  return shareCode === null ? <OwnResult /> : <SharedResult code={shareCode} />;
+  const params = useSearchParams();
+  const shareCode = params.get("share");
+  return shareCode === null ? <OwnResult focusHeading={params.get("from") === "survey"} /> : <SharedResult code={shareCode} />;
 }
 
-function OwnResult() {
+function OwnResult({ focusHeading }: { focusHeading: boolean }) {
   const profile = profileStore.useValue();
   // 방금 지웠는지 기억해 빈 화면에서 안내 문구와 포커스를 바꾼다
   const [deleted, setDeleted] = useState(false);
@@ -60,7 +61,7 @@ function OwnResult() {
 
   return (
     <>
-      <ProfileSummary profile={profile} onDelete={() => setDeleted(true)} />
+      <ProfileSummary profile={profile} onDelete={() => setDeleted(true)} focusHeading={focusHeading} />
       <ResultBody profile={profile} />
     </>
   );
@@ -135,8 +136,20 @@ function ResultBody({ profile, shared = false }: { profile: Profile; shared?: bo
   );
 }
 
-function ProfileSummary({ profile, onDelete }: { profile: Profile; onDelete: () => void }) {
+function ProfileSummary({ profile, onDelete, focusHeading }: { profile: Profile; onDelete: () => void; focusHeading: boolean }) {
   const router = useRouter();
+  const headingRef = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    if (!focusHeading) return;
+    headingRef.current?.focus();
+
+    // 같은 결과를 다시 열거나 새로고침할 때는 포커스를 옮기지 않는다.
+    const url = new URL(window.location.href);
+    url.searchParams.delete("from");
+    window.history.replaceState(null, "", url);
+  }, [focusHeading]);
+
   const seat = recommendedSeatHeight(profile.heightCm);
   const chips = [
     { step: 1, text: SITTER_LABEL[profile.sitter] },
@@ -194,7 +207,9 @@ function ProfileSummary({ profile, onDelete }: { profile: Profile; onDelete: () 
     <section className="bg-surface">
       <div className="page-container grid gap-6 py-10 md:grid-cols-[1fr_auto] md:items-end md:py-14">
         <div className="space-y-4">
-          <h1 className="text-xs font-semibold tracking-label text-muted-strong">당신의 권장 좌판 높이</h1>
+          <h1 ref={headingRef} tabIndex={-1} className="text-xs font-semibold tracking-label text-muted-strong">
+            당신의 권장 좌판 높이
+          </h1>
           <p className="font-display text-5xl leading-none">
             {seat}
             <span className="ml-2 text-2xl">mm</span>
