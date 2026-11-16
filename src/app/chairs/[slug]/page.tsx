@@ -93,7 +93,7 @@ export default async function ChairPage(props: PageProps<"/chairs/[slug]">) {
             사양
           </h2>
           <p className="text-sm leading-relaxed text-muted">
-            숫자 옆에 몸 기준으로 풀어 쓴 설명을 함께 적었어요. 권장 키는 좌판 높이로 계산한 참고값이에요.
+            숫자 옆에 의자가 몸에 어떻게 맞는지 풀어 썼어요. 권장 키는 좌판 높이로 계산한 참고값이에요.
           </p>
         </div>
         <SpecTable chair={chair} />

@@ -15,7 +15,7 @@ export const CHAIRS: readonly Chair[] = [
     category: "office",
     price: 890000,
     releaseDate: "2024-10-18",
-    summary: "통기성 좋은 메쉬 등판과 조절형 요추 패드로 긴 업무 시간을 받쳐주는 오피스 체어.",
+    summary: "통기성 좋은 메쉬 등판과 조절형 요추 패드를 갖춰 오래 일할 때 쓰기 좋은 오피스 체어.",
     highlights: [
       { title: "조절형 요추 패드", body: "허리 곡선에 맞춰 패드 높이를 올리고 내릴 수 있어요." },
       { title: "4D 팔걸이", body: "높이, 앞뒤, 좌우, 각도를 조절해 어깨 긴장을 줄여요." },

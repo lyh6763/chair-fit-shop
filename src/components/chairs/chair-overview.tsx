@@ -128,7 +128,7 @@ function FitPanel({ chair }: { chair: Chair }) {
     return (
       <div className="space-y-4 rounded-lg bg-primary-subtle p-5">
         <p className="font-semibold text-moss-700">이 의자가 내 몸에 맞을까요?</p>
-        <p className="text-sm text-moss-700">질문 6개에 답하면 적합도와 그 이유를 이 자리에 보여드려요.</p>
+        <p className="text-sm text-moss-700">질문 6개에 답하면 여기에 적합도와 그 이유를 보여드려요.</p>
         <Link href="/fit" className={buttonClass()}>
           내 몸에 맞는지 확인하기
         </Link>
