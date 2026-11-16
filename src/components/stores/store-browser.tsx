@@ -67,7 +67,7 @@ export function StoreBrowser() {
           </>
         ) : (
           <>
-            전국 매장 <span className="font-semibold text-ink tabular-nums">{stores.length}</span>곳
+            가상 매장 <span className="font-semibold text-ink tabular-nums">{stores.length}</span>곳
           </>
         )}
       </p>

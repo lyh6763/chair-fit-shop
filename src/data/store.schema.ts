@@ -11,9 +11,6 @@ export const storeSchema = z.object({
   id: z.string().check(z.regex(/^[a-z0-9-]+$/)),
   name: nonEmpty(),
   region: nonEmpty(),
-  address: nonEmpty(),
-  phone: z.string().check(z.regex(/^0\d{1,2}-\d{3,4}-\d{4}$/)),
-  hours: z.object({ weekday: z.string(), weekend: z.string() }),
   displayModels: z.array(z.string()).check(z.minLength(1)),
 });
 

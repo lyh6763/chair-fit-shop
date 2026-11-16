@@ -27,10 +27,4 @@ describe("store data", () => {
       expect(storesWithModel(chair.slug).length, chair.slug).toBeGreaterThan(0);
     }
   });
-
-  it("uses unassigned 0000 exchange numbers so tel: links never reach a real line", () => {
-    for (const store of STORES) {
-      expect(store.phone).toMatch(/^0\d{1,2}-0000-\d{4}$/);
-    }
-  });
 });

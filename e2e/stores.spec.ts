@@ -32,12 +32,11 @@ test.describe("Stores", () => {
     await expect(page.getByRole("article").filter({ hasText: "내 추천 1순위 모델 전시 중" })).toHaveCount(3);
   });
 
-  test("uses unreachable phone numbers in tel: links", async ({ page }) => {
+  test("labels the stores as fictional and omits contact details", async ({ page }) => {
     await page.goto("/stores");
-    const hrefs = await page.locator('a[href^="tel:"]').evaluateAll((links) =>
-      links.map((link) => link.getAttribute("href")),
-    );
-    expect(hrefs.length).toBeGreaterThan(0);
-    for (const href of hrefs) expect(href).toMatch(/^tel:0\d{1,2}-0000-\d{4}$/);
+    await expect(page.getByText(/포트폴리오용 가상 매장입니다/)).toBeVisible();
+    await expect(page.locator('a[href^="tel:"]')).toHaveCount(0);
+    await expect(page.getByText("영업시간", { exact: true })).toHaveCount(0);
+    await expect(page.getByText("주소", { exact: true })).toHaveCount(0);
   });
 });

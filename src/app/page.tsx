@@ -4,7 +4,6 @@ import { BodySilhouette } from "@/components/brand/body-silhouette";
 import { ChairCard } from "@/components/chairs/chair-card";
 import { buttonClass } from "@/components/ui/button";
 import { CHAIRS } from "@/data/chairs";
-import { STORES } from "@/data/stores";
 import { chairImage } from "@/lib/chairs/format";
 import { pageMetadata } from "@/lib/metadata";
 
@@ -124,14 +123,13 @@ export default function HomePage() {
       <section className="page-container pt-16 md:pt-24">
         <div className="flex flex-col items-start justify-between gap-6 rounded-xl bg-surface p-8 md:flex-row md:items-center md:p-12">
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">결국은 앉아봐야 알죠</h2>
+            <h2 className="text-2xl font-bold tracking-tight md:text-3xl">모델별 전시 매장</h2>
             <p className="text-muted-strong">
-              전국 <span className="font-semibold tabular-nums">{STORES.length}</span>개 쇼룸에서 라인업을 직접 앉아볼
-              수 있어요.
+              가상 매장 목록에서 모델별 전시 정보를 확인해 보세요.
             </p>
           </div>
           <Link href="/stores" className={buttonClass({ size: "l" })}>
-            가까운 매장 찾기
+            전시 모델 보기
           </Link>
         </div>
       </section>

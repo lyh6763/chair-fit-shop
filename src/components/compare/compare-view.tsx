@@ -64,7 +64,7 @@ export function CompareView() {
     return (
       <div className="space-y-6 rounded-lg bg-elevated px-6 py-16 text-center">
         <p className="text-xl font-semibold">비교할 의자를 담아주세요</p>
-        <p className="text-muted">의자 카드의 + 버튼으로 최대 3개까지 담을 수 있어요.</p>
+        <p className="text-muted">의자 카드의 + 버튼을 눌러 담아보세요.</p>
         <div className="flex flex-wrap justify-center gap-3">
           <Link href="/chairs" className={buttonClass({ size: "l" })}>
             의자 보러 가기

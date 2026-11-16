@@ -40,23 +40,6 @@ export function StoreCard({
         )}
       </div>
 
-      <dl className="grid grid-cols-[4.5rem_1fr] gap-x-3 gap-y-2 text-sm">
-        <dt className="text-muted">주소</dt>
-        <dd>{store.address}</dd>
-        <dt className="text-muted">영업시간</dt>
-        <dd className="tabular-nums">
-          평일 {store.hours.weekday}
-          <br />
-          주말 {store.hours.weekend}
-        </dd>
-        <dt className="text-muted">전화</dt>
-        <dd>
-          <a href={`tel:${store.phone}`} className="font-medium tabular-nums underline-offset-4 hover:underline">
-            {store.phone}
-          </a>
-        </dd>
-      </dl>
-
       <div className="mt-auto space-y-2 border-t border-line pt-4">
         <p className="text-xs font-semibold text-muted-strong">
           전시 모델 <span className="tabular-nums">{chairs.length}</span>

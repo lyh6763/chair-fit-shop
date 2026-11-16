@@ -129,7 +129,7 @@ function ResultBody({ profile, shared = false }: { profile: Profile; shared?: bo
       )}
 
       <p className="border-t border-line pt-6 text-sm text-muted">
-        적합도는 단순화한 계산식으로 구한 참고값이에요. 실제 착좌감은 매장에서 직접 앉아보고 확인해 주세요.
+        적합도는 단순화한 계산식으로 구한 참고값이에요.
       </p>
     </div>
   );
@@ -399,7 +399,7 @@ function TopMatch({ score, topSlugs }: { score: ChairScore; topSlugs: string[] }
           href={`/stores?model=${chair.slug}`}
           className="inline-block text-sm font-semibold text-primary hover:underline"
         >
-          매장에서 앉아보기 · 전시 매장 {storesWithModel(chair.slug).length}곳 →
+          가상 전시 매장 {storesWithModel(chair.slug).length}곳 보기 →
         </Link>
       </div>
     </section>
