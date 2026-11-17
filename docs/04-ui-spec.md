@@ -254,6 +254,7 @@
 - **크기:** 전체 폭 × 최소 64, 터치 영역 48 이상
 - **토큰:** Selected 시 border 2px `interactive-default`, bg `interactive-subtle`, text `moss-700`, radius `md`
 - **접근성:** `role="radiogroup"` 또는 체크박스 그룹, 방향키 이동
+- *(v0.3: 단일 선택은 `OptionRadio`로 구현했다. 카드 전체가 네이티브 `input type="radio"`의 label이고, 묶음은 질문 제목을 이름으로 쓰는 `fieldset`이다. 방향키는 선택만 바꾸고 "다음"으로 확정하며, 선택·포커스 모양은 `:has(:checked)`·`:has(:focus-visible)`로 그린다. 복수 선택은 "없어요"가 다른 답을 지우는 규칙 때문에 `aria-pressed` 토글 버튼(`OptionCard`)으로 둔다.)*
 
 #### RangeSlider
 - **States:** Default / Dragging / Focused / Disabled
