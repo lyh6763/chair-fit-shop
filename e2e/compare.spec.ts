@@ -82,4 +82,22 @@ test.describe("Compare", () => {
     await page.goto("/compare");
     await expect(page.getByText("비교할 의자를 담아주세요")).toBeVisible();
   });
+
+  test("loads the tray on demand on pages without chairs, such as the survey", async ({ page }) => {
+    // 트레이 내용은 담긴 모델이 있을 때만 불러온다. 의자를 보여 주지 않는 /fit은 그 코드를 미리 받지 않으므로 여기서 확인한다
+    await page.goto("/fit");
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByRole("complementary", { name: "비교 목록" })).toHaveCount(0);
+
+    await page.evaluate(() => localStorage.setItem("duoback-fit:compare", JSON.stringify(["q1w", "d3hs"])));
+    await page.reload();
+    const tray = page.getByRole("complementary", { name: "비교 목록" });
+    await expect(tray.getByRole("link", { name: /비교하기/ })).toHaveAttribute("href", "/compare?m=q1w,d3hs");
+    await expect(tray.getByRole("img", { name: "Q1W 메쉬" })).toBeVisible();
+
+    await tray.getByRole("button", { name: "Q1W 메쉬 비교에서 빼기" }).click();
+    await expect(tray).toContainText("하나 더 담아주세요");
+    await tray.getByRole("button", { name: "D3-HS 메쉬 비교에서 빼기" }).click();
+    await expect(tray).toHaveCount(0);
+  });
 });
