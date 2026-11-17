@@ -8,6 +8,8 @@ const PAGES = [
   "/chairs/q1w",
   "/chairs/dk073w",
   "/fit",
+  // 질문 화면은 첫 질문(단일 선택 라디오)만 직접 열 수 있다. 뒤 질문은 첫 미답변 질문으로 돌아간다
+  "/fit?step=1",
   "/fit/method",
   "/fit/result?share=1-s-170-60-9-w-lb-80",
   "/compare",

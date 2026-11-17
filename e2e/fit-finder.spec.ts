@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { completeFitFinder } from "./helpers";
+import { chooseAndContinue, completeFitFinder } from "./helpers";
 
 test.describe("Fit Finder", () => {
   test("recommends a chair with its reasons and score breakdown", async ({ page }) => {
@@ -59,25 +59,64 @@ test.describe("Fit Finder", () => {
     await page.goto("/fit");
     await page.getByRole("button", { name: "시작하기" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "누가 앉나요?" })).toBeFocused();
-    await page.getByRole("button", { name: /^나/ }).click();
+    await chooseAndContinue(page, /^나/);
     await expect(page.getByRole("heading", { level: 1, name: "키와 체중을 알려주세요" })).toBeFocused();
+  });
+
+  test("changes a single answer with arrow keys and confirms it with the next button", async ({ page }) => {
+    await page.goto("/fit");
+    await page.getByRole("button", { name: "시작하기" }).click();
+    const question = page.getByRole("group", { name: "누가 앉나요?" });
+    const self = question.getByRole("radio", { name: /^나/ });
+    const child = question.getByRole("radio", { name: /^자녀/ });
+
+    // 제목 다음 Tab은 라디오 묶음으로 들어가고, 방향키는 선택만 바꾼다
+    await expect(page.getByRole("heading", { level: 1, name: "누가 앉나요?" })).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(self).toBeFocused();
+    await expect(self).not.toBeChecked();
+    await page.keyboard.press("ArrowDown");
+    await expect(child).toBeFocused();
+    await expect(child).toBeChecked();
+    await page.keyboard.press("ArrowUp");
+    await expect(self).toBeChecked();
+    await page.keyboard.press("ArrowDown");
+    await expect(page).toHaveURL(/step=1/);
+
+    // 묶음은 Tab 한 번으로 빠져나와 확정 버튼에 닿는다
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("button", { name: "다음", exact: true })).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { level: 1, name: "키와 체중을 알려주세요" })).toBeFocused();
+    await expect(page.getByRole("slider", { name: "키" })).toHaveValue("145");
+  });
+
+  test("asks for an answer before confirming a single choice", async ({ page }) => {
+    await page.goto("/fit");
+    await page.getByRole("button", { name: "시작하기" }).click();
+    await page.getByRole("button", { name: "다음", exact: true }).click();
+    await expect(page.getByRole("alert").filter({ hasText: "답을 하나 골라주세요" })).toBeVisible();
+    await expect(page).toHaveURL(/step=1/);
+
+    await page.getByRole("radio", { name: /^나/ }).check();
+    await expect(page.getByRole("alert").filter({ hasText: "답을 하나 골라주세요" })).toHaveCount(0);
   });
 
   test("keeps answers when going back a step", async ({ page }) => {
     await page.goto("/fit");
     await page.getByRole("button", { name: "시작하기" }).click();
-    await page.getByRole("button", { name: /^자녀/ }).click();
+    await chooseAndContinue(page, /^자녀/);
     await page.getByRole("button", { name: "← 이전" }).click();
     await expect(page).toHaveURL(/step=1/);
-    await expect(page.getByRole("button", { name: /^자녀/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(page.getByRole("radio", { name: /^자녀/ })).toBeChecked();
   });
 
   test("asks for a choice before leaving the concerns step", async ({ page }) => {
     await page.goto("/fit?preset=back");
     // 프리셋은 누가 앉는지 + 불편 부위를 채운다. 2~4단계를 지나 5단계까지 간다
     await page.getByRole("button", { name: "다음" }).click();
-    await page.getByRole("button", { name: "3~6시간" }).click();
-    await page.getByRole("button", { name: /^공부/ }).click();
+    await chooseAndContinue(page, "3~6시간");
+    await chooseAndContinue(page, /^공부/);
     await expect(page.getByRole("heading", { level: 1, name: "불편한 곳이 있나요?" })).toBeVisible();
     await expect(page.getByRole("button", { name: "허리", exact: true })).toHaveAttribute("aria-pressed", "true");
 
@@ -102,7 +141,9 @@ test.describe("Fit Finder", () => {
   test("offers to resume an unfinished session", async ({ page }) => {
     await page.goto("/fit");
     await page.getByRole("button", { name: "시작하기" }).click();
-    await page.getByRole("button", { name: /^나/ }).click();
+    await chooseAndContinue(page, /^나/);
+    // 1단계에도 "다음"이 있으므로 2단계로 바뀐 뒤에 누른다
+    await expect(page.getByRole("heading", { level: 1, name: "키와 체중을 알려주세요" })).toBeVisible();
     await page.getByRole("button", { name: "다음" }).click();
     await expect(page).toHaveURL(/step=3/);
 

@@ -9,7 +9,7 @@ export async function completeFitFinder(
   await page.getByRole("button", { name: "시작하기" }).click();
 
   await expect(page.getByRole("heading", { level: 1, name: "누가 앉나요?" })).toBeVisible();
-  await page.getByRole("button", { name: /^나/ }).click();
+  await chooseAndContinue(page, /^나/);
 
   await expect(page.getByRole("heading", { level: 1, name: "키와 체중을 알려주세요" })).toBeVisible();
   for (let i = 0; i < heightDelta; i += 1) {
@@ -17,15 +17,24 @@ export async function completeFitFinder(
   }
   await page.getByRole("button", { name: "다음" }).click();
 
-  await page.getByRole("button", { name: hours }).click();
-  await page.getByRole("button", { name: /^업무/ }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "하루에 얼마나 앉아 있나요?" })).toBeVisible();
+  await chooseAndContinue(page, hours);
+  await expect(page.getByRole("heading", { level: 1, name: "주로 무엇을 하나요?" })).toBeVisible();
+  await chooseAndContinue(page, /^업무/);
 
   await expect(page.getByRole("heading", { level: 1, name: "불편한 곳이 있나요?" })).toBeVisible();
   await page.getByRole("button", { name: concern, exact: true }).click();
   await page.getByRole("button", { name: "다음" }).click();
 
-  await page.getByRole("button", { name: budget }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "예산은 어느 정도인가요?" })).toBeVisible();
+  await chooseAndContinue(page, budget, "결과 보기");
   await expect(page).toHaveURL(/\/fit\/result$/);
+}
+
+/** 단일 선택 질문에서 라디오를 고르고 확정 버튼("다음" 또는 "결과 보기")을 누른다. */
+export async function chooseAndContinue(page: Page, answer: string | RegExp, submit = "다음") {
+  await page.getByRole("radio", { name: answer }).check();
+  await page.getByRole("button", { name: submit, exact: true }).click();
 }
 
 /** 가로 스크롤이 생기지 않는지 확인한다. */

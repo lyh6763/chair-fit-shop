@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { BodySilhouette } from "@/components/brand/body-silhouette";
 import { buttonClass } from "@/components/ui/button";
 import {
@@ -26,13 +26,13 @@ import {
   type Draft,
 } from "@/lib/fit/profile";
 import { draftStore, profileStore } from "@/lib/fit/store";
-import { OptionCard } from "./option-card";
+import { OptionCard, OptionRadio } from "./option-card";
 import { RangeSlider } from "./range-slider";
 
 const TOTAL_STEPS = 6;
 const STEP_NAMES = ["누가 앉나요", "키와 체중", "앉는 시간", "주 용도", "불편한 곳", "예산"];
 const COMPLETE = TOTAL_STEPS + 1;
-/** 화면에는 질문이 하나씩만 나오므로 고정 id로 질문 제목과 선택지 묶음(role="group")을 잇는다 */
+/** 화면에는 질문이 하나씩만 나오므로 고정 id로 질문 제목과 선택지 묶음(fieldset 또는 role="group")을 잇는다 */
 const QUESTION_TITLE_ID = "fit-question-title";
 
 /** 아직 답하지 않은 첫 질문 번호. 모두 답했으면 COMPLETE. */
@@ -106,36 +106,41 @@ export function FitFlow() {
     <FitStepFrame step={step}>
       {step === 1 && (
         <SingleChoice
+          name="sitter"
           options={SITTERS.map((value) => ({
             value,
             label: SITTER_LABEL[value],
             description: value === "self" ? "직접 앉을 의자를 찾아요" : "아이 키에 맞춰 찾아요",
           }))}
           value={current.sitter}
-          onSelect={(sitter) => save({ sitter })}
+          onSubmit={(sitter) => save({ sitter })}
         />
       )}
       {step === 2 && <BodyStep draft={current} onNext={save} />}
       {step === 3 && (
         <SingleChoice
+          name="hours"
           options={HOURS.map((value) => ({ value, label: HOURS_LABEL[value] }))}
           value={current.hours}
-          onSelect={(hours) => save({ hours })}
+          onSubmit={(hours) => save({ hours })}
         />
       )}
       {step === 4 && (
         <SingleChoice
+          name="purpose"
           options={PURPOSES.map((value) => ({ value, label: PURPOSE_LABEL[value] }))}
           value={current.purpose}
-          onSelect={(purpose) => save({ purpose })}
+          onSubmit={(purpose) => save({ purpose })}
         />
       )}
       {step === 5 && <ConcernStep initial={current.concerns} onNext={(concerns) => save({ concerns })} />}
       {step === 6 && (
         <SingleChoice
+          name="budget"
           options={BUDGETS.map((value) => ({ value, label: BUDGET_LABEL[value] }))}
           value={current.budget}
-          onSelect={(budget) => save({ budget })}
+          submitLabel="결과 보기"
+          onSubmit={(budget) => save({ budget })}
         />
       )}
     </FitStepFrame>
@@ -243,27 +248,69 @@ function FitStepFrame({ step, children }: { step: number; children: ReactNode })
   );
 }
 
+/**
+ * 단일 선택 질문. 네이티브 라디오 묶음이라 방향키로 선택만 바꾸고, "다음"(마지막은 "결과 보기")을 눌러야 확정된다.
+ * 고르는 중에 단계가 넘어가지 않으므로 키보드·스크린 리더 사용자도 선택지를 모두 들어 본 뒤 정할 수 있다.
+ */
 function SingleChoice<T extends string>({
+  name,
   options,
   value,
-  onSelect,
+  submitLabel = "다음",
+  onSubmit,
 }: {
+  name: string;
   options: { value: T; label: string; description?: string }[];
+  /** 이미 저장된 답. 결과 화면의 "수정"으로 들어오면 첫 렌더 뒤에 채워질 수 있어 고른 값이 없을 때의 기본값으로만 쓴다 */
   value: T | undefined;
-  onSelect: (value: T) => void;
+  submitLabel?: string;
+  onSubmit: (value: T) => void;
 }) {
+  const [picked, setPicked] = useState<T>();
+  const [error, setError] = useState(false);
+  const selected = picked ?? value;
+  const errorId = `${name}-error`;
+
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (selected === undefined) {
+      setError(true);
+      return;
+    }
+    onSubmit(selected);
+  }
+
   return (
-    <div role="group" aria-labelledby={QUESTION_TITLE_ID} className="space-y-3">
-      {options.map((option) => (
-        <OptionCard
-          key={option.value}
-          label={option.label}
-          description={option.description}
-          selected={option.value === value}
-          onSelect={() => onSelect(option.value)}
-        />
-      ))}
-    </div>
+    <form onSubmit={submit} className="space-y-6">
+      <fieldset
+        aria-labelledby={QUESTION_TITLE_ID}
+        aria-describedby={error ? errorId : undefined}
+        className="min-w-0 space-y-3"
+      >
+        {options.map((option) => (
+          <OptionRadio
+            key={option.value}
+            name={name}
+            value={option.value}
+            label={option.label}
+            description={option.description}
+            checked={option.value === selected}
+            onChange={() => {
+              setError(false);
+              setPicked(option.value);
+            }}
+          />
+        ))}
+      </fieldset>
+      {error && (
+        <p id={errorId} role="alert" className="text-sm font-medium text-error">
+          답을 하나 골라주세요.
+        </p>
+      )}
+      <button type="submit" className={buttonClass({ size: "l", fullWidth: true })}>
+        {submitLabel}
+      </button>
+    </form>
   );
 }
 
