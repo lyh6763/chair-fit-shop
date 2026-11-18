@@ -65,6 +65,7 @@ function NavLink({ item, tab = false }: { item: NavItem; tab?: boolean }) {
     <Link
       href={item.href}
       aria-current={item.active ? "page" : undefined}
+      data-compare-nav={item.badge !== undefined ? "" : undefined}
       className={`inline-flex items-center gap-1.5 font-medium ${layout}`}
     >
       {item.label}

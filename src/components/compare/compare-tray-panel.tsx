@@ -2,11 +2,17 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRef } from "react";
 import { buttonClass } from "@/components/ui/button";
 import { getChair } from "@/data/chairs";
 import { chairImage } from "@/lib/chairs/format";
 import { COMPARE_MAX, compareHref } from "@/lib/compare/list";
 import { compareActions, useCompareFullSignal } from "@/lib/compare/store";
+
+function focusCompareNavigation() {
+  const links = document.querySelectorAll<HTMLAnchorElement>("[data-compare-nav]");
+  Array.from(links).find((link) => link.getClientRects().length > 0)?.focus({ preventScroll: true });
+}
 
 /**
  * 하단 고정 비교 트레이(O01)의 내용. 보일지는 compare-tray.tsx가 정하고, 담긴 모델이 있을 때만 이 파일을 불러온다.
@@ -14,10 +20,23 @@ import { compareActions, useCompareFullSignal } from "@/lib/compare/store";
  */
 export function CompareTrayPanel({ list }: { list: readonly string[] }) {
   const fullSignal = useCompareFullSignal();
+  const removeButtons = useRef(new Map<string, HTMLButtonElement>());
 
   const chairs = list.flatMap((slug) => getChair(slug) ?? []);
   const slots = Array.from({ length: COMPARE_MAX }, (_, index) => chairs[index]);
   const ready = chairs.length >= 2;
+
+  function removeChair(index: number, button: HTMLButtonElement) {
+    if (document.activeElement === button) {
+      const neighbor = chairs[index + 1] ?? chairs[index - 1];
+      if (neighbor) {
+        removeButtons.current.get(neighbor.slug)?.focus({ preventScroll: true });
+      } else {
+        focusCompareNavigation();
+      }
+    }
+    compareActions.remove(chairs[index].slug);
+  }
 
   return (
     <>
@@ -49,7 +68,11 @@ export function CompareTrayPanel({ list }: { list: readonly string[] }) {
                   <button
                     type="button"
                     aria-label={`${chair.name} 비교에서 빼기`}
-                    onClick={() => compareActions.remove(chair.slug)}
+                    ref={(button) => {
+                      if (button) removeButtons.current.set(chair.slug, button);
+                      else removeButtons.current.delete(chair.slug);
+                    }}
+                    onClick={(event) => removeChair(index, event.currentTarget)}
                     className="absolute -top-1.5 -right-1.5 grid size-5 place-items-center rounded-full bg-ink text-[11px] text-inverse hover:bg-stone-600"
                   >
                     ✕
@@ -67,7 +90,10 @@ export function CompareTrayPanel({ list }: { list: readonly string[] }) {
           </ul>
           <button
             type="button"
-            onClick={() => compareActions.clear()}
+            onClick={(event) => {
+              if (document.activeElement === event.currentTarget) focusCompareNavigation();
+              compareActions.clear();
+            }}
             className="hidden text-sm text-muted hover:text-ink hover:underline md:block"
           >
             비우기

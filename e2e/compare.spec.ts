@@ -36,11 +36,13 @@ test.describe("Compare", () => {
   test("filters to differing rows and marks the best value", async ({ page }) => {
     await page.goto("/compare?m=q1w,d2500g");
     const table = page.getByRole("table");
-    const rowsBefore = await table.locator("tbody tr:not([aria-hidden])").count();
+    const rows = table.locator("tbody tr:not([aria-hidden])");
+    await expect(rows.first()).toBeVisible();
+    const rowsBefore = await rows.count();
 
     await page.getByRole("switch", { name: "차이 나는 항목만" }).click();
     await expect(page.getByRole("switch", { name: "차이 나는 항목만" })).toHaveAttribute("aria-checked", "true");
-    await expect.poll(() => table.locator("tbody tr:not([aria-hidden])").count()).toBeLessThan(rowsBefore);
+    await expect.poll(() => rows.count()).toBeLessThan(rowsBefore);
 
     // 최대 하중: Q1W 120kg vs D2500G 130kg → 130kg이 가장 유리
     await expect(table.getByText("(가장 유리)").first()).toBeAttached();
@@ -114,15 +116,20 @@ test.describe("Compare", () => {
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     await expect(page.getByRole("complementary", { name: "비교 목록" })).toHaveCount(0);
 
-    await page.evaluate(() => localStorage.setItem("duoback-fit:compare", JSON.stringify(["q1w", "d3hs"])));
+    await page.evaluate(() => localStorage.setItem("duoback-fit:compare", JSON.stringify(["q1w", "d3hs", "d2500g"])));
     await page.reload();
     const tray = page.getByRole("complementary", { name: "비교 목록" });
-    await expect(tray.getByRole("link", { name: /비교하기/ })).toHaveAttribute("href", "/compare?m=q1w,d3hs");
+    await expect(tray.getByRole("link", { name: /비교하기/ })).toHaveAttribute("href", "/compare?m=q1w,d3hs,d2500g");
     await expect(tray.getByRole("img", { name: "Q1W 메쉬" })).toBeVisible();
 
-    await tray.getByRole("button", { name: "Q1W 메쉬 비교에서 빼기" }).click();
+    const next = tray.getByRole("button", { name: "D3-HS 메쉬 비교에서 빼기" });
+    await tray.getByRole("button", { name: "Q1W 메쉬 비교에서 빼기" }).press("Enter");
+    await expect(next).toBeFocused();
+    await tray.getByRole("button", { name: /^D2500G.* 비교에서 빼기$/ }).press("Space");
     await expect(tray).toContainText("하나 더 담아주세요");
-    await tray.getByRole("button", { name: "D3-HS 메쉬 비교에서 빼기" }).click();
+    await expect(next).toBeFocused();
+    await page.keyboard.press("Enter");
     await expect(tray).toHaveCount(0);
+    await expect(page.getByRole("navigation", { name: "주요 메뉴" }).getByRole("link", { name: "비교", exact: true })).toBeFocused();
   });
 });
