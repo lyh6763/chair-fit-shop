@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { dismissToast, useToast } from "@/lib/toast";
+import { dismissToast, pauseToastDismiss, resumeToastDismiss, useToast } from "@/lib/toast";
 
 /**
  * 토스트 영역. 라이브 영역은 항상 DOM에 두어야 스크린 리더가 새 메시지를 읽는다.
@@ -19,6 +19,10 @@ export function Toaster() {
       {toast && (
         <div
           key={toast.id}
+          onFocus={() => pauseToastDismiss(toast.id)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) resumeToastDismiss(toast.id);
+          }}
           className="pointer-events-auto flex max-w-md animate-toast-in items-center gap-4 rounded-full bg-ink py-3 pr-3 pl-5 text-sm text-inverse shadow-lg"
         >
           <span>{toast.message}</span>
@@ -26,7 +30,7 @@ export function Toaster() {
             (toast.action.href ? (
               <Link
                 href={toast.action.href}
-                onClick={dismissToast}
+                onClick={() => dismissToast(toast.id)}
                 className="shrink-0 rounded-full px-3 py-1 font-semibold text-moss-100 underline-offset-4 hover:underline"
               >
                 {toast.action.label}
@@ -36,7 +40,7 @@ export function Toaster() {
                 type="button"
                 onClick={() => {
                   toast.action?.onClick?.();
-                  dismissToast();
+                  dismissToast(toast.id);
                 }}
                 className="shrink-0 rounded-full px-3 py-1 font-semibold text-moss-100 underline-offset-4 hover:underline"
               >

@@ -19,14 +19,27 @@ function emit() {
 
 /** 화면 하단에 한 번에 하나만 띄운다. 새 토스트가 오면 이전 것을 대체한다. */
 export function showToast(message: string, action?: Toast["action"]) {
-  current = { id: nextId++, message, action };
-  clearTimeout(timer);
-  timer = setTimeout(dismissToast, DURATION_MS);
+  const id = nextId++;
+  current = { id, message, action };
+  resumeToastDismiss(id);
   emit();
 }
 
-export function dismissToast() {
+export function pauseToastDismiss(id: number) {
+  if (current?.id !== id) return;
   clearTimeout(timer);
+  timer = undefined;
+}
+
+export function resumeToastDismiss(id: number) {
+  if (current?.id !== id) return;
+  clearTimeout(timer);
+  timer = setTimeout(() => dismissToast(id), DURATION_MS);
+}
+
+export function dismissToast(id: number) {
+  if (current?.id !== id) return;
+  pauseToastDismiss(id);
   current = null;
   emit();
 }
