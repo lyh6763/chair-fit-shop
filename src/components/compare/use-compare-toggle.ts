@@ -5,14 +5,20 @@ import { compareActions, useCompareList } from "@/lib/compare/store";
 import { showToast } from "@/lib/toast";
 
 /** 비교 담기/빼기와 그 결과 안내(토스트)를 한곳에서 처리한다. */
-export function useCompareToggle(slug: string) {
+export function useCompareToggle(slug: string, onUndo?: () => void) {
   const list = useCompareList();
   const inCompare = list?.includes(slug) ?? false;
 
   function toggle() {
     if (inCompare) {
       compareActions.remove(slug);
-      showToast("비교에서 뺐어요", { label: "되돌리기", onClick: () => compareActions.add(slug) });
+      showToast("비교에서 뺐어요", {
+        label: "되돌리기",
+        onClick: () => {
+          compareActions.add(slug);
+          onUndo?.();
+        },
+      });
       return;
     }
     const result = compareActions.add(slug);

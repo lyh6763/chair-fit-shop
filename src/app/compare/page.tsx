@@ -14,7 +14,9 @@ export default function ComparePage() {
   return (
     <div className="page-container space-y-8 py-10 md:py-14">
       <header className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">비교</h1>
+        <h1 id="compare-heading" tabIndex={-1} className="scroll-mt-(--header-h) text-3xl font-bold tracking-tight md:text-4xl">
+          비교
+        </h1>
         <p className="text-muted">최대 3개 모델을 나란히 놓고 차이를 확인해 보세요.</p>
       </header>
       <Suspense fallback={<div className="h-96 animate-pulse rounded-data bg-surface" aria-busy="true" />}>

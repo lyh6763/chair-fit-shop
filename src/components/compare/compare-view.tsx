@@ -9,6 +9,7 @@ import { compareHref, parseCompareParam } from "@/lib/compare/list";
 import { compareActions, useCompareList } from "@/lib/compare/store";
 import { profileStore } from "@/lib/fit/store";
 import { showToast } from "@/lib/toast";
+import { focusCompareHeading } from "./compare-page-focus";
 import { CompareTable } from "./compare-table";
 
 function sameList(a: readonly string[], b: readonly string[]) {
@@ -106,10 +107,17 @@ export function CompareView() {
           </button>
           <button
             type="button"
-            onClick={() => {
+            onClick={(event) => {
               const previous = compareActions.get();
+              if (document.activeElement === event.currentTarget) focusCompareHeading();
               compareActions.clear();
-              showToast("비교 목록을 비웠어요", { label: "되돌리기", onClick: () => compareActions.replace(previous) });
+              showToast("비교 목록을 비웠어요", {
+                label: "되돌리기",
+                onClick: () => {
+                  compareActions.replace(previous);
+                  focusCompareHeading();
+                },
+              });
             }}
             className={buttonClass({ variant: "ghost", size: "s" })}
           >

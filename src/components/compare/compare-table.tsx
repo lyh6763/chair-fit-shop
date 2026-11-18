@@ -11,6 +11,7 @@ import { COMPARE_MAX } from "@/lib/compare/list";
 import { buildCompareGroups, onlyDifferences, type CompareGroup, type CompareRow } from "@/lib/compare/rows";
 import type { Profile } from "@/lib/fit/profile";
 import { scoreChair } from "@/lib/fit/score";
+import { focusCompareHeading } from "./compare-page-focus";
 import { useCompareToggle } from "./use-compare-toggle";
 
 type Layout = "desktop" | "mobile";
@@ -154,7 +155,19 @@ function Table({
 }
 
 function ChairHeader({ chair }: { chair: Chair }) {
-  const { toggle } = useCompareToggle(chair.slug);
+  const { toggle } = useCompareToggle(chair.slug, focusCompareHeading);
+
+  function remove(button: HTMLButtonElement) {
+    if (document.activeElement === button) {
+      const buttons = Array.from(button.closest("thead")?.querySelectorAll<HTMLButtonElement>("[data-compare-remove]") ?? []);
+      const index = buttons.indexOf(button);
+      const neighbor = buttons[index + 1] ?? buttons[index - 1];
+      if (neighbor) neighbor.focus({ preventScroll: true });
+      else focusCompareHeading();
+    }
+    toggle();
+  }
+
   return (
     <div className="space-y-2">
       <div className="relative">
@@ -170,7 +183,8 @@ function ChairHeader({ chair }: { chair: Chair }) {
         </Link>
         <button
           type="button"
-          onClick={toggle}
+          data-compare-remove=""
+          onClick={(event) => remove(event.currentTarget)}
           aria-label={`${chair.name} 비교에서 빼기`}
           className="absolute top-1 right-1 grid size-7 place-items-center rounded-full bg-ink/80 text-xs text-inverse hover:bg-ink"
         >

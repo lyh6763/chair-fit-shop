@@ -49,12 +49,37 @@ test.describe("Compare", () => {
 
   test("removes a chair, syncs the URL, and undoes", async ({ page }) => {
     await page.goto("/compare?m=q1w,d3hs,d2500g");
-    await page.getByRole("button", { name: "D3-HS 메쉬 비교에서 빼기" }).click();
+    await page.getByRole("button", { name: "D3-HS 메쉬 비교에서 빼기" }).press("Enter");
     await expect(page).toHaveURL(/m=q1w,d2500g$/);
     await expect(page.getByRole("link", { name: "+ 모델 추가" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "D2500G-DASW 비교에서 빼기" })).toBeFocused();
 
-    await toast(page).getByRole("button", { name: "되돌리기" }).click();
+    await toast(page).getByRole("button", { name: "되돌리기" }).press("Space");
     await expect(page).toHaveURL(/m=q1w,d2500g,d3hs$/);
+    await expect(page.getByRole("heading", { level: 1, name: "비교" })).toBeFocused();
+  });
+
+  test("returns focus to the heading when the comparison becomes empty", async ({ page }) => {
+    await page.goto("/compare?m=q1w");
+    const heading = page.getByRole("heading", { level: 1, name: "비교" });
+    const undo = toast(page).getByRole("button", { name: "되돌리기" });
+
+    await page.getByRole("button", { name: "Q1W 메쉬 비교에서 빼기" }).press("Enter");
+    await expect(page.getByText("비교할 의자를 담아주세요")).toBeVisible();
+    await expect(heading).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("link", { name: "의자 보러 가기" })).toBeFocused();
+
+    await undo.press("Space");
+    await expect(modelHeaders(page)).toHaveCount(1);
+    await expect(heading).toBeFocused();
+
+    await page.getByRole("button", { name: "비우기" }).press("Enter");
+    await expect(page.getByText("비교할 의자를 담아주세요")).toBeVisible();
+    await expect(heading).toBeFocused();
+    await undo.press("Space");
+    await expect(modelHeaders(page)).toHaveCount(1);
+    await expect(heading).toBeFocused();
   });
 
   test("keeps the visitor's list when a shared link has no valid models", async ({ page }) => {
