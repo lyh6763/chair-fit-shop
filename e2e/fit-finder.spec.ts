@@ -55,6 +55,38 @@ test.describe("Fit Finder", () => {
     await expect(page.getByRole("heading", { level: 1, name: "아직 결과가 없어요" })).toBeVisible();
   });
 
+  test("removes a saved result from the tab that created it when another tab deletes it", async ({ page, context }) => {
+    await completeFitFinder(page);
+    const otherTab = await context.newPage();
+    await otherTab.goto("/fit/result");
+    await expect(otherTab.getByRole("heading", { level: 1, name: "당신의 권장 좌판 높이" })).toBeVisible();
+
+    await otherTab.getByRole("button", { name: "내 정보 지우기" }).press("Enter");
+    await expect(page.getByRole("heading", { level: 1, name: "아직 결과가 없어요" })).toBeVisible();
+    await otherTab.getByRole("status").getByRole("button", { name: "되돌리기" }).press("Enter");
+    await expect(page.getByRole("heading", { level: 1, name: "당신의 권장 좌판 높이" })).toBeVisible();
+
+    await otherTab.evaluate(() => localStorage.clear());
+    await expect(page.getByRole("heading", { level: 1, name: "아직 결과가 없어요" })).toBeVisible();
+  });
+
+  test("keeps the current result in memory when the browser refuses to save it", async ({ page }) => {
+    await page.addInitScript(() => {
+      const setItem = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (key, value) {
+        if (this === localStorage && key === "chair-fit-shop:profile") {
+          throw new DOMException("Storage quota exceeded", "QuotaExceededError");
+        }
+        setItem.call(this, key, value);
+      };
+    });
+
+    await completeFitFinder(page);
+    await expect(page.getByRole("heading", { level: 1, name: "당신의 권장 좌판 높이" })).toBeVisible();
+    await page.reload();
+    await expect(page.getByRole("heading", { level: 1, name: "아직 결과가 없어요" })).toBeVisible();
+  });
+
   test("moves focus to each question for screen readers", async ({ page }) => {
     await page.goto("/fit");
     await page.getByRole("button", { name: "시작하기" }).click();

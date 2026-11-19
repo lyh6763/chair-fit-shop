@@ -15,6 +15,7 @@ export function createStorageStore<T>(
 ) {
   const listeners = new Set<Listener>();
   let memory: string | null = null;
+  let memoryOnly = false;
   let cachedRaw: string | null | undefined;
   let cachedValue: T | null = null;
 
@@ -27,11 +28,15 @@ export function createStorageStore<T>(
   }
 
   function readRaw() {
-    try {
-      return storage()?.getItem(key) ?? memory;
-    } catch {
-      return memory;
+    if (!memoryOnly) {
+      try {
+        const source = storage();
+        if (source) memory = source.getItem(key);
+      } catch {
+        // 읽을 수 없으면 마지막으로 읽거나 쓴 값을 유지한다.
+      }
     }
+    return memory;
   }
 
   function get(): T | null {
@@ -53,11 +58,13 @@ export function createStorageStore<T>(
   function set(value: T | null) {
     const raw = value === null ? null : JSON.stringify(value);
     memory = raw;
+    const target = storage();
+    memoryOnly = target === null;
     try {
-      if (raw === null) storage()?.removeItem(key);
-      else storage()?.setItem(key, raw);
+      if (raw === null) target?.removeItem(key);
+      else target?.setItem(key, raw);
     } catch {
-      // 저장 실패 시 메모리 값만 유지한다
+      memoryOnly = true;
     }
     listeners.forEach((listener) => listener());
   }
@@ -65,7 +72,9 @@ export function createStorageStore<T>(
   function subscribe(listener: Listener) {
     listeners.add(listener);
     const onStorage = (event: StorageEvent) => {
-      if (event.key === key) listener();
+      if (event.storageArea !== storage() || (event.key !== key && event.key !== null)) return;
+      memoryOnly = false;
+      listener();
     };
     window.addEventListener("storage", onStorage);
     return () => {
