@@ -2,13 +2,23 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect } from "react";
 import { buttonClass } from "@/components/ui/button";
 import { cartItems, cartLineKey, MAX_QUANTITY } from "@/lib/cart/cart";
 import { cartActions, cartStore } from "@/lib/cart/store";
 import { chairImage, formatPrice } from "@/lib/chairs/format";
 
 export function CartContents({ preview = false }: { preview?: boolean }) {
+  const headingId = preview ? "order-preview-title" : "cart-title";
   const lines = cartStore.useValue();
+
+  useEffect(() => {
+    // Link가 해시 위치로 스크롤한 뒤 키보드 초점도 그 제목에 둔다.
+    if (window.location.hash === `#${headingId}`) {
+      document.getElementById(headingId)?.focus({ preventScroll: true });
+    }
+  }, [headingId]);
+
   if (lines === undefined) return <p aria-busy="true">상품을 불러오는 중이에요.</p>;
 
   const items = cartItems(lines ?? []);
@@ -27,7 +37,7 @@ export function CartContents({ preview = false }: { preview?: boolean }) {
     if (document.activeElement === button) {
       const buttons = Array.from(button.closest("ul")?.querySelectorAll<HTMLButtonElement>("[data-cart-remove]") ?? []);
       const index = buttons.indexOf(button);
-      (buttons[index + 1] ?? buttons[index - 1] ?? document.getElementById("cart-title"))?.focus();
+      (buttons[index + 1] ?? buttons[index - 1] ?? document.getElementById(headingId))?.focus();
     }
     cartActions.remove(key);
   }
@@ -101,7 +111,10 @@ export function CartContents({ preview = false }: { preview?: boolean }) {
       <section aria-labelledby="order-total-title" className="space-y-4 rounded-lg border border-line bg-surface p-5">
         <h2 id="order-total-title" className="text-lg font-bold">상품 합계</h2>
         <p aria-live="polite" className="text-2xl font-bold tabular-nums">{formatPrice(total)}</p>
-        <Link href={preview ? "/cart" : "/order-preview"} className={buttonClass({ fullWidth: true })}>
+        <Link
+          href={preview ? "/cart#cart-title" : "/order-preview#order-preview-title"}
+          className={buttonClass({ fullWidth: true })}
+        >
           {preview ? "장바구니로 돌아가기" : "주문 내용 확인"}
         </Link>
       </section>

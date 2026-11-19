@@ -41,7 +41,7 @@ export function ChairOverview({ chair }: { chair: Chair }) {
     event.preventDefault();
     const quantity = Number(new FormData(event.currentTarget).get("quantity"));
     if (cartActions.add({ chairSlug: chair.slug, colorSlug: color, quantity })) {
-      showToast("장바구니에 담았어요", { label: "장바구니 보기", href: "/cart" });
+      showToast("장바구니에 담았어요", { label: "장바구니 보기", href: "/cart#cart-title" });
     } else {
       showToast(`같은 모델과 색상은 ${MAX_QUANTITY}개까지 담을 수 있어요.`);
     }

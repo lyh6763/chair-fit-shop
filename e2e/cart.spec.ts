@@ -16,12 +16,17 @@ test("carries a recommended model and its color through the cart to the order pr
   await quantity.fill("2");
   await page.getByRole("button", { name: "장바구니 담기" }).press("Enter");
   await page.getByRole("status").getByRole("link", { name: "장바구니 보기" }).press("Enter");
-  await expect(page).toHaveURL(/\/cart$/);
+  await expect(page).toHaveURL(/\/cart#cart-title$/);
 
   const main = page.getByRole("main");
+  const cartHeading = main.getByRole("heading", { level: 1, name: "장바구니" });
+  const chairLink = main.getByRole("link", { name: "데스크 메쉬 체어" });
   const total = main.getByRole("region", { name: "상품 합계" });
   await expect(main).toContainText("화이트 · 단가 549,000원");
   await expect(total).toContainText("1,098,000원");
+  await expect(cartHeading).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(chairLink).toBeFocused();
   const increase = main.getByRole("button", { name: /화이트 수량 늘리기/ });
   await increase.press("Enter");
   await expect(total).toContainText("1,647,000원");
@@ -29,19 +34,26 @@ test("carries a recommended model and its color through the cart to the order pr
   await expect(total).toContainText("1,647,000원");
 
   await total.getByRole("link", { name: "주문 내용 확인" }).press("Enter");
-  await expect(page).toHaveURL(/\/order-preview$/);
+  await expect(page).toHaveURL(/\/order-preview#order-preview-title$/);
+  await expect(total).toContainText("1,647,000원");
+  await expect(main.getByRole("heading", { level: 1, name: "주문 내용 확인" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(chairLink).toBeFocused();
   await expect(main).toContainText("화이트");
   await expect(main).toContainText("수량 3개");
-  await expect(total).toContainText("1,647,000원");
   await expect(main.getByRole("button")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"]).analyze();
   expect(results.violations.filter(({ impact }) => impact === "serious" || impact === "critical")).toEqual([]);
 
   await total.getByRole("link", { name: "장바구니로 돌아가기" }).press("Enter");
+  await expect(page).toHaveURL(/\/cart#cart-title$/);
   await expect(total).toContainText("1,647,000원");
+  await expect(cartHeading).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(chairLink).toBeFocused();
   await main.getByRole("button", { name: /화이트 삭제/ }).press("Enter");
-  await expect(main.getByRole("heading", { level: 1, name: "장바구니" })).toBeFocused();
+  await expect(cartHeading).toBeFocused();
   await expect(main.getByRole("link", { name: "의자 살펴보기" })).toBeVisible();
 });
 
@@ -76,6 +88,12 @@ test("keeps populated checkout pages usable at the target widths", async ({ page
       await expect(decrease).toHaveAttribute("aria-disabled", "true");
       await main.getByRole("link", { name: "주문 내용 확인" }).click();
       await expect(main.getByText("수량 1개")).toBeVisible();
+      const heading = main.getByRole("heading", { level: 1, name: "주문 내용 확인" });
+      await expect(heading).toBeFocused();
+      await expect.poll(() => heading.evaluate((element) => {
+        const headerBottom = document.querySelector("body > header")?.getBoundingClientRect().bottom ?? 0;
+        return element.getBoundingClientRect().top - headerBottom;
+      })).toBeGreaterThanOrEqual(0);
       await expectNoHorizontalOverflow(page);
       await main.getByRole("link", { name: "장바구니로 돌아가기" }).click();
       await main.getByRole("button", { name: /화이트 삭제/ }).click();
