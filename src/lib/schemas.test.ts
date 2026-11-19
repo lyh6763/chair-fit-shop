@@ -52,14 +52,14 @@ describe("draftSchema", () => {
 
 describe("chairSchema", () => {
   it("rejects a seat range whose min exceeds max", () => {
-    const chair = getChair("q1w")!;
+    const chair = getChair("adjustable-mesh")!;
     const broken = { ...chair, spec: { ...chair.spec, seatHeightMm: { min: 520, max: 420 } } };
     expect(chairSchema.safeParse(chair).success).toBe(true);
     expect(chairSchema.safeParse(broken).success).toBe(false);
   });
 
   it("rejects malformed slugs, colors, and dates", () => {
-    const chair = getChair("q1w")!;
+    const chair = getChair("adjustable-mesh")!;
     expect(chairSchema.safeParse({ ...chair, slug: "Q1W" }).success).toBe(false);
     expect(chairSchema.safeParse({ ...chair, colors: [{ ...chair.colors[0], hex: "black" }] }).success).toBe(false);
     expect(chairSchema.safeParse({ ...chair, releaseDate: "2024-13-40" }).success).toBe(false);

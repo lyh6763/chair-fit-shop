@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { unsupportedChars } from "../../../scripts/og-charset.mjs";
 import { CHAIRS } from "@/data/chairs";
 import { CATEGORY_LABEL, formatPrice, formatSeatRange } from "@/lib/chairs/format";
+import { SITE_NAME } from "@/lib/metadata";
 
 /**
  * OG 이미지는 서브셋 폰트(KS X 1001 한글 + ASCII)로 그린다.
@@ -22,7 +23,7 @@ describe("OG font subset", () => {
 
   it("covers the static OG copy", () => {
     const copy = [
-      "DUOBACK Fit",
+      SITE_NAME,
       "내 몸에 맞는 의자, 1분이면 찾아요",
       "키와 앉는 습관만 알려주면 적합도와 그 이유를 보여드려요",
       "키 172cm의 권장 좌판 높이 455 mm",

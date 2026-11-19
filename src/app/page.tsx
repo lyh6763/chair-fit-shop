@@ -22,8 +22,8 @@ const SCENARIOS = [
   { preset: "back", title: "허리가 불편해요", body: "허리를 잘 받쳐주는 의자가 필요해요." },
 ];
 
-const LINEUP = [...CHAIRS].sort((a, b) => b.releaseDate.localeCompare(a.releaseDate)).slice(0, 4);
-const HERO_CHAIR = CHAIRS.find((chair) => chair.slug === "d2500g") ?? CHAIRS[0];
+const LINEUP = [...CHAIRS].sort((a, b) => b.releaseDate.localeCompare(a.releaseDate));
+const HERO_CHAIR = CHAIRS[0];
 
 export default function HomePage() {
   return (
@@ -113,7 +113,7 @@ export default function HomePage() {
             전체 보기 →
           </Link>
         </div>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4 lg:gap-x-6">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-3 lg:gap-x-6">
           {LINEUP.map((chair) => (
             <ChairCard key={chair.slug} chair={chair} />
           ))}

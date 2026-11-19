@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test("keeps the undo action until focus leaves the notice", async ({ page }) => {
   await page.clock.install();
-  await page.goto("/compare?m=q1w,d3hs");
+  await page.goto("/compare?m=adjustable-mesh,desk-mesh");
 
   const clear = page.getByRole("button", { name: "비우기", exact: true });
   const undo = page.getByRole("status").getByRole("button", { name: "되돌리기", exact: true });
@@ -11,7 +11,7 @@ test("keeps the undo action until focus leaves the notice", async ({ page }) => 
   await page.clock.fastForward(4500);
   await expect(undo).toBeFocused();
   await page.keyboard.press("Space");
-  await expect(page).toHaveURL(/m=q1w,d3hs$/);
+  await expect(page).toHaveURL(/m=adjustable-mesh,desk-mesh$/);
   await expect(undo).toHaveCount(0);
 
   await clear.press("Enter");
@@ -29,16 +29,16 @@ test("preserves the ordinary timeout and pauses when a notice link is focused", 
   await page.goto("/chairs");
 
   const status = page.getByRole("status");
-  await page.getByRole("button", { name: "Q1W 메쉬 비교에 담기" }).press("Enter");
+  await page.getByRole("button", { name: "조절형 메쉬 체어 비교에 담기" }).press("Enter");
   await expect(status).toContainText("비교에 담았어요");
   await page.clock.fastForward(4500);
   await expect(status).toBeEmpty();
 
-  await page.getByRole("button", { name: "D3-HS 메쉬 비교에 담기" }).press("Enter");
+  await page.getByRole("button", { name: "데스크 메쉬 체어 비교에 담기" }).press("Enter");
   const compare = status.getByRole("link", { name: "비교하기", exact: true });
   await compare.focus();
   await page.clock.fastForward(4500);
   await expect(compare).toBeFocused();
   await page.keyboard.press("Enter");
-  await expect(page).toHaveURL(/\/compare\?m=q1w,d3hs$/);
+  await expect(page).toHaveURL(/\/compare\?m=adjustable-mesh,desk-mesh$/);
 });

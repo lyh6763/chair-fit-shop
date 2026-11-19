@@ -11,7 +11,7 @@ import { gzipSync } from "node:zlib";
 const ROUTES = {
   "/": "index.html",
   "/chairs": "chairs.html",
-  "/chairs/q1w": "chairs/q1w.html",
+  "/chairs/adjustable-mesh": "chairs/adjustable-mesh.html",
   "/fit": "fit.html",
   "/compare": "compare.html",
   "/stores": "stores.html",

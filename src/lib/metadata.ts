@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 
-export const SITE_NAME = "DUOBACK Fit";
-export const DEFAULT_TITLE = "DUOBACK Fit — 내 몸에 맞는 의자 찾기";
-export const DEFAULT_DESCRIPTION = "키, 체중, 앉는 시간을 알려주면 내 몸에 맞는 의자와 그 이유를 알려드려요.";
+export const SITE_NAME = "체어 핏";
+export const DEFAULT_TITLE = `${SITE_NAME} — 내 몸에 맞는 의자 찾기`;
+export const DEFAULT_DESCRIPTION = "내 몸에 맞는 의자를 찾고, 색상과 수량을 골라 주문 내용을 확인해 보세요.";
 
 /** layout과 모든 페이지가 함께 쓰는 Open Graph 필드 */
 export const SHARED_OPEN_GRAPH = { siteName: SITE_NAME, locale: "ko_KR", type: "website" } as const;
 
 /** 사이트 공유 이미지(app/opengraph-image.tsx가 만든다) */
-export const SITE_OG_IMAGE_ALT = "DUOBACK Fit — 키와 앉는 습관으로 내 몸에 맞는 의자를 찾는 서비스";
+export const SITE_OG_IMAGE_ALT = `${SITE_NAME} — 키와 앉는 습관에 맞춰 의자를 추천하는 체험`;
 const SITE_OG_IMAGE = { url: "/opengraph-image", width: 1200, height: 630, alt: SITE_OG_IMAGE_ALT };
 
 type PageMetadataInput = {
-  /** 탭 제목. layout의 "%s | DUOBACK Fit" 템플릿이 붙는다. 생략하면 기본 제목을 쓴다(홈). */
+  /** 탭 제목. 생략하면 홈의 기본 제목을 쓴다. */
   title?: string;
   /** 생략하면 layout의 설명을 물려받는다. */
   description?: string;

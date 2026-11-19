@@ -5,7 +5,7 @@ import { CompareTray } from "@/components/compare/compare-tray";
 import { SiteFooter } from "@/components/site/site-footer";
 import { SiteHeader } from "@/components/site/site-header";
 import { Toaster } from "@/components/site/toaster";
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SHARED_OPEN_GRAPH } from "@/lib/metadata";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SHARED_OPEN_GRAPH, SITE_NAME } from "@/lib/metadata";
 import { SITE_URL } from "@/lib/site-url";
 import "./globals.css";
 
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
     default: DEFAULT_TITLE,
-    template: "%s | DUOBACK Fit",
+    template: `%s | ${SITE_NAME}`,
   },
   description: DEFAULT_DESCRIPTION,
   // 페이지는 pageMetadata()로 og:title·og:url을 더한다. 여기 값은 not-found처럼 따로 정하지 않은 페이지용이다.

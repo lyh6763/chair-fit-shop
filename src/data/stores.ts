@@ -14,31 +14,31 @@ export const STORES: readonly Store[] = [
     id: "gangnam",
     name: "강남 쇼룸",
     region: "서울",
-    displayModels: ["q1w", "d3hs", "d2500g", "dk073w", "d043w"],
+    displayModels: ["desk-mesh", "adjustable-mesh", "study-fabric"],
   },
   {
     id: "seongsu",
     name: "성수 쇼룸",
     region: "서울",
-    displayModels: ["q1w", "d2500g"],
+    displayModels: ["adjustable-mesh"],
   },
   {
     id: "pangyo",
     name: "판교 쇼룸",
     region: "경기",
-    displayModels: ["q1w", "d3hs", "d2500g"],
+    displayModels: ["desk-mesh", "adjustable-mesh"],
   },
   {
     id: "seomyeon",
     name: "서면 쇼룸",
     region: "부산",
-    displayModels: ["d3hs", "dk073w", "d043w"],
+    displayModels: ["desk-mesh", "study-fabric"],
   },
   {
     id: "dongseongno",
     name: "동성로 쇼룸",
     region: "대구",
-    displayModels: ["q1w", "dk073w"],
+    displayModels: ["adjustable-mesh"],
   },
 ];
 

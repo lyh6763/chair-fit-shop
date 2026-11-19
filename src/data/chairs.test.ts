@@ -27,15 +27,14 @@ describe("chair data", () => {
     }
   });
 
-  it("derives the recommended height ranges documented in the PRD", () => {
+  it("derives the recommended height ranges from the three demo chairs", () => {
     const ranges = Object.fromEntries(
       CHAIRS.map((chair) => [chair.slug, recommendedHeightRange(chair.spec)]),
     );
-    expect(ranges.q1w).toEqual({ min: 158, max: 198 });
-    expect(ranges.d3hs).toEqual({ min: 160, max: 200 });
-    expect(ranges.d2500g).toEqual({ min: 166, max: 206 });
-    // 고정형은 허용 오차 ±15mm(±6cm)만큼 넓힌다
-    expect(ranges.dk073w).toEqual({ min: 160, max: 172 });
-    expect(ranges.d043w).toEqual({ min: 152, max: 164 });
+    expect(ranges).toEqual({
+      "adjustable-mesh": { min: 158, max: 198 },
+      "desk-mesh": { min: 160, max: 200 },
+      "study-fabric": { min: 152, max: 164 },
+    });
   });
 });

@@ -17,6 +17,7 @@ import { storesWithModel } from "@/data/stores";
 import { CATEGORY_LABEL, chairImage, formatPrice } from "@/lib/chairs/format";
 import { compareHref } from "@/lib/compare/list";
 import { compareActions } from "@/lib/compare/store";
+import { SITE_NAME } from "@/lib/metadata";
 import {
   BUDGET_LABEL,
   CONCERN_LABEL,
@@ -173,7 +174,7 @@ function ProfileSummary({ profile, onDelete, focusHeading }: { profile: Profile;
     const url = new URL(`/fit/result?share=${encodeShare(profile)}`, window.location.origin).toString();
     if (window.matchMedia("(pointer: coarse)").matches && navigator.share) {
       try {
-        await navigator.share({ title: "DUOBACK Fit 결과", url });
+        await navigator.share({ title: `${SITE_NAME} 결과`, url });
         return;
       } catch (error) {
         if (error instanceof DOMException && error.name === "AbortError") return;

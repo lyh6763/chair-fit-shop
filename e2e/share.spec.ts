@@ -1,7 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import { completeFitFinder } from "./helpers";
 
-const PROFILE_KEY = "duoback-fit:profile";
+const PROFILE_KEY = "chair-fit-shop:profile";
 
 /** 시스템 공유 창 대신 클립보드 복사 경로를 타게 하고, 복사한 값을 읽을 수 있게 한다. */
 async function captureCopiedLink(page: Page) {

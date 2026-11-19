@@ -24,7 +24,7 @@ export function sanitizeCompareList(slugs: readonly string[]) {
   return result;
 }
 
-/** `?m=q1w,d3hs` 쿼리 값을 비교 목록으로 바꾼다. */
+/** `?m=adjustable-mesh,desk-mesh` 쿼리 값을 비교 목록으로 바꾼다. */
 export function parseCompareParam(value: string | null) {
   if (!value) return [];
   return sanitizeCompareList(value.split(",").map((slug) => slug.trim()));

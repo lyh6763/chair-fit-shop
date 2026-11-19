@@ -40,64 +40,64 @@ describe("recommendedSeatHeight", () => {
 
 describe("scoreChair", () => {
   it("gives full body score when the seat range fits", () => {
-    const result = scoreChair(base, chair("q1w"));
+    const result = scoreChair(base, chair("adjustable-mesh"));
     expect(result?.seat).toEqual({ target: 455, status: "in", distanceMm: 0 });
     expect(result?.breakdown.body).toBe(SCORE_MAX.body);
     expect(result?.reasons[0]).toEqual({ label: "좌판 높이", value: "420–520 mm" });
   });
 
   it("excludes chairs whose max load is exceeded", () => {
-    expect(scoreChair({ ...base, weightKg: 110 }, chair("d043w"))).toBeNull();
-    expect(scoreChair({ ...base, weightKg: 110 }, chair("q1w"))).not.toBeNull();
+    expect(scoreChair({ ...base, weightKg: 110 }, chair("study-fabric"))).toBeNull();
+    expect(scoreChair({ ...base, weightKg: 110 }, chair("adjustable-mesh"))).not.toBeNull();
   });
 
   it("penalizes heavy users near the load limit", () => {
-    const result = scoreChair({ ...base, weightKg: 105 }, chair("q1w"));
+    const result = scoreChair({ ...base, weightKg: 105 }, chair("adjustable-mesh"));
     expect(result?.breakdown.body).toBe(SCORE_MAX.body - 5);
     expect(result?.notes.map((note) => note.label)).toContain("하중 여유 적음");
   });
 
   it("does not penalize within the seat tolerance", () => {
-    // 165cm → 438mm, 고정 440mm와 2mm 차이
-    const result = scoreChair({ ...base, heightCm: 165 }, chair("dk073w"));
+    // 160cm의 권장 높이 425mm와 고정 좌판 420mm의 차이는 5mm다.
+    const result = scoreChair({ ...base, heightCm: 160 }, chair("study-fabric"));
     expect(result?.breakdown.body).toBe(SCORE_MAX.body);
   });
 
   it("recommends a footrest when the seat is too high", () => {
-    // 130cm → 350mm, q1w 최저 420mm → 70mm 높고 허용 오차를 55mm 넘는다
-    const result = scoreChair({ ...base, sitter: "child", heightCm: 130, weightKg: 30 }, chair("q1w"));
+    // 130cm → 350mm, adjustable-mesh 최저 420mm → 70mm 높고 허용 오차를 55mm 넘는다
+    const result = scoreChair({ ...base, sitter: "child", heightCm: 130, weightKg: 30 }, chair("adjustable-mesh"));
     expect(result?.seat).toEqual({ target: 350, status: "below", distanceMm: 70 });
     expect(result?.breakdown.body).toBe(Math.round(SCORE_MAX.body - 55 * 0.5));
     expect(result?.notes[0]?.label).toBe("발받침 권장");
   });
 
   it("penalizes a too-low seat twice as hard as a too-high one", () => {
-    // 195cm → 513mm, dk073w 440mm 고정 → 73mm 낮고 허용 오차를 58mm 넘는다
-    const result = scoreChair({ ...base, heightCm: 195 }, chair("dk073w"));
+    // 195cm의 권장 높이 513mm와 고정 좌판 420mm의 차이는 93mm다.
+    const result = scoreChair({ ...base, heightCm: 195 }, chair("study-fabric"));
     expect(result?.seat.status).toBe("above");
     expect(result?.breakdown.body).toBe(0);
   });
 
   it("reduces the budget score per 100,000 won over", () => {
-    const result = scoreChair({ ...base, budget: "upTo80" }, chair("q1w"));
+    const result = scoreChair({ ...base, budget: "upTo80" }, chair("adjustable-mesh"));
     expect(result?.breakdown.budget).toBe(5);
-    expect(result?.notes).toContainEqual({ label: "예산 초과", value: "+9만 원" });
+    expect(result?.notes).toContainEqual({ label: "예산 초과", value: "+3만 원" });
   });
 
   it("gives full concern score when nothing is uncomfortable", () => {
-    const result = scoreChair({ ...base, concerns: [] }, chair("d043w"));
+    const result = scoreChair({ ...base, concerns: [] }, chair("study-fabric"));
     expect(result?.breakdown.concern).toBe(SCORE_MAX.concern);
   });
 
   it("orders concern reasons by the user's selection", () => {
-    const result = scoreChair({ ...base, concerns: ["heat", "lowerBack"] }, chair("q1w"));
+    const result = scoreChair({ ...base, concerns: ["heat", "lowerBack"] }, chair("adjustable-mesh"));
     expect(result?.reasons.map((reason) => reason.label)).toEqual(["좌판 높이", "메쉬 소재", "요추 지지"]);
   });
 
   it("rewards growth headroom only on adjustable chairs", () => {
     const child: Profile = { ...base, sitter: "child", heightCm: 150, weightKg: 40, purpose: "study" };
-    expect(scoreChair(child, chair("q1w"))?.reasons.map((r) => r.label)).toContain("성장 여유");
-    expect(scoreChair(child, chair("d043w"))?.reasons.map((r) => r.label)).not.toContain("성장 여유");
+    expect(scoreChair(child, chair("adjustable-mesh"))?.reasons.map((r) => r.label)).toContain("성장 여유");
+    expect(scoreChair(child, chair("study-fabric"))?.reasons.map((r) => r.label)).not.toContain("성장 여유");
   });
 
   it("keeps the total equal to the sum of the breakdown", () => {

@@ -12,8 +12,8 @@ test.describe("Fit Finder", () => {
     await expect(page.getByRole("list", { name: "입력한 정보" }).getByRole("link").first()).toBeFocused();
     await expect(page.locator("main")).toContainText("455mm");
 
-    // 예산 80만 원 안에서 9시간·업무·허리 → D3-HS(78만 원)
-    const top = page.getByRole("heading", { level: 2, name: "D3-HS 메쉬" });
+    // 예산 80만 원 안에서 9시간·업무·허리 → 데스크 메쉬 체어(54만 9천 원)
+    const top = page.getByRole("heading", { level: 2, name: "데스크 메쉬 체어" });
     await expect(top).toBeVisible();
 
     const breakdown = page.getByText("점수 구성").locator("..").locator("..");
@@ -30,8 +30,8 @@ test.describe("Fit Finder", () => {
     await completeFitFinder(page);
     const stored = () =>
       page.evaluate(() => ({
-        profile: localStorage.getItem("duoback-fit:profile"),
-        draft: sessionStorage.getItem("duoback-fit:draft"),
+        profile: localStorage.getItem("chair-fit-shop:profile"),
+        draft: sessionStorage.getItem("chair-fit-shop:draft"),
       }));
     const before = await stored();
     expect(before.profile).not.toBeNull();
@@ -154,7 +154,7 @@ test.describe("Fit Finder", () => {
 
   test("shows the saved fit on chair pages", async ({ page }) => {
     await completeFitFinder(page);
-    await page.goto("/chairs/q1w");
+    await page.goto("/chairs/adjustable-mesh");
     await expect(page.getByText("나와의 핏")).toBeVisible();
     await expect(page.getByRole("figure").first()).toContainText("권장 높이 455mm");
   });

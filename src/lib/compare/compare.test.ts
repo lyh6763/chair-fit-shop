@@ -26,64 +26,65 @@ function row(groups: ReturnType<typeof buildCompareGroups>, key: string): Compar
 
 describe("compare list", () => {
   it("drops unknown and duplicate slugs and keeps at most 3", () => {
-    expect(sanitizeCompareList(["q1w", "nope", "q1w", "d3hs", "d2500g", "dk073w"])).toEqual([
-      "q1w",
-      "d3hs",
-      "d2500g",
+    expect(sanitizeCompareList(["adjustable-mesh", "nope", "adjustable-mesh", "desk-mesh", "study-fabric"])).toEqual([
+      "adjustable-mesh",
+      "desk-mesh",
+      "study-fabric",
     ]);
   });
 
   it("parses the ?m= query value", () => {
-    expect(parseCompareParam("q1w, d3hs")).toEqual(["q1w", "d3hs"]);
+    expect(parseCompareParam("adjustable-mesh, desk-mesh")).toEqual(["adjustable-mesh", "desk-mesh"]);
     expect(parseCompareParam("")).toEqual([]);
     expect(parseCompareParam(null)).toEqual([]);
   });
 
   it("reports why an add did nothing", () => {
-    expect(addToCompareList(["q1w"], "d3hs")).toEqual({ list: ["q1w", "d3hs"], result: "added" });
-    expect(addToCompareList(["q1w"], "q1w").result).toBe("exists");
-    expect(addToCompareList(["q1w", "d3hs", "d2500g"], "dk073w")).toEqual({
-      list: ["q1w", "d3hs", "d2500g"],
+    expect(addToCompareList(["adjustable-mesh"], "desk-mesh")).toEqual({ list: ["adjustable-mesh", "desk-mesh"], result: "added" });
+    expect(addToCompareList(["adjustable-mesh"], "adjustable-mesh").result).toBe("exists");
+    expect(addToCompareList(["adjustable-mesh", "desk-mesh", "study-fabric"], "another-chair")).toEqual({
+      list: ["adjustable-mesh", "desk-mesh", "study-fabric"],
       result: "full",
     });
   });
 
   it("removes and builds shareable links", () => {
-    expect(removeFromCompareList(["q1w", "d3hs"], "q1w")).toEqual(["d3hs"]);
-    expect(compareHref(["q1w", "d3hs"])).toBe("/compare?m=q1w,d3hs");
+    expect(removeFromCompareList(["adjustable-mesh", "desk-mesh"], "adjustable-mesh")).toEqual(["desk-mesh"]);
+    expect(compareHref(["adjustable-mesh", "desk-mesh"])).toBe("/compare?m=adjustable-mesh,desk-mesh");
     expect(compareHref([])).toBe("/compare");
   });
 });
 
 describe("compare rows", () => {
   it("marks differing rows and the best value", () => {
-    const groups = buildCompareGroups(chairs("q1w", "d2500g"));
+    const groups = buildCompareGroups(chairs("study-fabric", "adjustable-mesh"));
     const load = row(groups, "load");
-    expect(load.values).toEqual(["120 kg", "130 kg"]);
+    expect(load.values).toEqual(["100 kg", "120 kg"]);
     expect(load.diff).toBe(true);
     expect(load.best).toEqual([1]);
-    expect(load.bars).toEqual([120 / 130, 1]);
+    expect(load.bars).toEqual([100 / 120, 1]);
   });
 
   it("treats the cheaper price as best", () => {
-    expect(row(buildCompareGroups(chairs("q1w", "d3hs")), "price").best).toEqual([1]);
+    expect(row(buildCompareGroups(chairs("adjustable-mesh", "desk-mesh")), "price").best).toEqual([1]);
   });
 
   it("marks every tied leader, and nobody when all are equal", () => {
-    const groups = buildCompareGroups(chairs("q1w", "d2500g", "d3hs"));
-    expect(row(groups, "armrest").best).toEqual([0, 1]);
-    expect(row(groups, "headrest").best).toEqual([]);
-    expect(row(groups, "headrest").diff).toBe(false);
+    const groups = buildCompareGroups(chairs("adjustable-mesh", "study-fabric", "desk-mesh"));
+    expect(row(groups, "load").best).toEqual([0, 2]);
+    const officeGroups = buildCompareGroups(chairs("adjustable-mesh", "desk-mesh"));
+    expect(row(officeGroups, "headrest").best).toEqual([]);
+    expect(row(officeGroups, "headrest").diff).toBe(false);
   });
 
   it("does not mark diff or best with a single chair", () => {
-    const single = buildCompareGroups(chairs("q1w"));
+    const single = buildCompareGroups(chairs("adjustable-mesh"));
     const flagged = single.flatMap((g) => g.rows).filter((r) => r.diff || r.best.length > 0);
     expect(flagged).toEqual([]);
   });
 
   it("keeps only differing rows and drops empty groups", () => {
-    const groups = onlyDifferences(buildCompareGroups(chairs("q1w", "d3hs")));
+    const groups = onlyDifferences(buildCompareGroups(chairs("adjustable-mesh", "desk-mesh")));
     const keys = groups.flatMap((g) => g.rows.map((r) => r.key));
     expect(keys).not.toContain("category");
     expect(keys).not.toContain("headrest");
@@ -92,10 +93,10 @@ describe("compare rows", () => {
   });
 
   it("returns one value per chair in order", () => {
-    const list: Chair[] = chairs("dk073w", "q1w");
+    const list: Chair[] = chairs("study-fabric", "adjustable-mesh");
     for (const r of buildCompareGroups(list).flatMap((g) => g.rows)) {
       expect(r.values).toHaveLength(2);
     }
-    expect(row(buildCompareGroups(list), "seat").values).toEqual(["440 mm 고정", "420–520 mm"]);
+    expect(row(buildCompareGroups(list), "seat").values).toEqual(["420 mm 고정", "420–520 mm"]);
   });
 });

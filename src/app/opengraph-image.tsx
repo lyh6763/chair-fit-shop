@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { getChair } from "@/data/chairs";
+import { CHAIRS } from "@/data/chairs";
 import { chairImage } from "@/lib/chairs/format";
 import { recommendedSeatHeight } from "@/lib/fit/score";
 import { SITE_OG_IMAGE_ALT } from "@/lib/metadata";
@@ -13,8 +13,7 @@ export const contentType = "image/png";
 const EXAMPLE_HEIGHT_CM = 172;
 
 export default async function SiteOgImage() {
-  const chair = getChair("d2500g");
-  if (!chair) throw new Error("hero chair missing");
+  const chair = CHAIRS[0];
   const photo = await publicImageSrc(chairImage(chair, chair.colors[0].slug));
   const target = recommendedSeatHeight(EXAMPLE_HEIGHT_CM);
 

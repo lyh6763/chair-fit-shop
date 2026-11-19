@@ -39,8 +39,8 @@ const SHOTS = [
   { name: "fit-result", device: DESKTOP, path: "/fit/result", profile: true },
   // 모바일은 사진 아래의 1순위 모델과 분석 카드(데이터 레이어)가 보이도록 스크롤한다
   { name: "fit-result-mobile", device: MOBILE, path: "/fit/result", profile: true, scrollTo: "#top-title" },
-  { name: "chair-detail", device: DESKTOP, path: "/chairs/q1w", profile: true },
-  { name: "compare", device: DESKTOP, path: "/compare?m=q1w,d3hs,d2500g", profile: true },
+  { name: "chair-detail", device: DESKTOP, path: "/chairs/adjustable-mesh", profile: true },
+  { name: "compare", device: DESKTOP, path: "/compare?m=adjustable-mesh,desk-mesh,study-fabric", profile: true },
   // 공유받은 결과: 같은 프로필의 구간 코드(키 170~174, 체중 60~69)를 프로필 없는 브라우저로 연다
   { name: "fit-result-shared", device: DESKTOP, path: "/fit/result?share=1-s-170-60-6-w-lb-any" },
 ];
@@ -66,8 +66,8 @@ try {
     const context = await browser.newContext({ ...shot.device, reducedMotion: "reduce" });
     await context.addInitScript(
       ({ profile, draft }) => {
-        if (profile) localStorage.setItem("duoback-fit:profile", JSON.stringify(profile));
-        if (draft) sessionStorage.setItem("duoback-fit:draft", JSON.stringify(draft));
+        if (profile) localStorage.setItem("chair-fit-shop:profile", JSON.stringify(profile));
+        if (draft) sessionStorage.setItem("chair-fit-shop:draft", JSON.stringify(draft));
       },
       { profile: shot.profile ? PROFILE : null, draft: shot.draft ?? null },
     );

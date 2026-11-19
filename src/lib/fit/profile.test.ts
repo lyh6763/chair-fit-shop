@@ -114,11 +114,11 @@ describe("parseDraft / parseProfile match the zod reference", () => {
 
 describe("parseSlugList", () => {
   it("accepts up to ten strings and rejects anything else", () => {
-    expect(parseSlugList(["q1w", "d3hs"])).toEqual(["q1w", "d3hs"]);
+    expect(parseSlugList(["adjustable-mesh", "desk-mesh"])).toEqual(["adjustable-mesh", "desk-mesh"]);
     expect(parseSlugList([])).toEqual([]);
-    expect(parseSlugList(Array.from({ length: 11 }, () => "q1w"))).toBeNull();
-    expect(parseSlugList(["q1w", 1])).toBeNull();
-    expect(parseSlugList("q1w")).toBeNull();
-    expect(parseSlugList({ 0: "q1w" })).toBeNull();
+    expect(parseSlugList(Array.from({ length: 11 }, () => "adjustable-mesh"))).toBeNull();
+    expect(parseSlugList(["adjustable-mesh", 1])).toBeNull();
+    expect(parseSlugList("adjustable-mesh")).toBeNull();
+    expect(parseSlugList({ 0: "adjustable-mesh" })).toBeNull();
   });
 });

@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { ReactNode } from "react";
+import { SITE_NAME } from "@/lib/metadata";
 
 /**
  * OG 이미지 공통 요소. 렌더러(Satori)는 CSS 변수와 grid를 지원하지 않으므로
@@ -43,9 +44,8 @@ export async function publicImageSrc(path: string) {
 
 export function Wordmark() {
   return (
-    <div style={{ display: "flex", alignItems: "baseline", gap: 10, fontSize: 30, fontWeight: 700, color: OG_COLORS.ink }}>
-      DUOBACK
-      <span style={{ color: OG_COLORS.primary, fontWeight: 500 }}>Fit</span>
+    <div style={{ display: "flex", fontSize: 30, fontWeight: 700, color: OG_COLORS.primary }}>
+      {SITE_NAME}
     </div>
   );
 }

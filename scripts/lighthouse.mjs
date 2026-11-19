@@ -22,7 +22,7 @@ const BASE = `http://localhost:${PORT}`;
 const RUNS = Number(process.env.LH_RUNS ?? 3);
 const OUT = join(process.cwd(), "lighthouse-reports");
 
-const PAGES = ["/", "/chairs", "/chairs/q1w", "/fit", "/fit/method", "/compare", "/stores"];
+const PAGES = ["/", "/chairs", "/chairs/adjustable-mesh", "/fit", "/fit/method", "/compare", "/stores"];
 
 // 카테고리별 최소 점수. 성능은 CPU 영향을 받으니 환경변수로 조정할 수 있게 둔다.
 const MIN_SCORE = {

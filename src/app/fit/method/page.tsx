@@ -5,7 +5,7 @@ import { pageMetadata } from "@/lib/metadata";
 
 export const metadata = pageMetadata({
   title: "Fit 계산 방식",
-  description: "DUOBACK Fit이 적합도를 계산하는 방식과 그 한계를 공개합니다.",
+  description: "체어 핏이 의자 적합도를 계산하는 방식과 그 한계를 안내합니다.",
   path: "/fit/method",
 });
 

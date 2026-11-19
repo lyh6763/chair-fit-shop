@@ -8,7 +8,7 @@ import {
   type AddResult,
 } from "./list";
 
-const store = createStorageStore("duoback-fit:compare", "local", parseSlugList);
+const store = createStorageStore("chair-fit-shop:compare", "local", parseSlugList);
 
 /** 데이터에서 사라진 모델이 저장돼 있어도 걸러서 돌려준다. 하이드레이션 전에는 undefined. */
 export function useCompareList() {

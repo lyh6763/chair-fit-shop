@@ -1,13 +1,12 @@
 import Link from "next/link";
+import { SITE_NAME } from "@/lib/metadata";
 
 export function SiteFooter() {
   return (
     <footer className="mt-24 border-t border-line bg-surface">
       <div className="page-container grid gap-8 py-12 md:grid-cols-[1fr_auto]">
         <div className="space-y-2">
-          <p className="font-bold">
-            DUOBACK <span className="font-display font-medium text-primary">Fit</span>
-          </p>
+          <p className="font-bold">{SITE_NAME}</p>
           <p className="max-w-md text-sm text-muted-strong">
             포트폴리오용 프로젝트입니다. 제품 정보와 스펙은 가상 데이터이며 실제 브랜드·제품과 관련이 없습니다.
           </p>
