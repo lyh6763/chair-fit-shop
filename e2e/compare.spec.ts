@@ -32,7 +32,7 @@ test.describe("Compare", () => {
   test("filters to differing rows and marks the best value", async ({ page }) => {
     await page.goto("/compare?m=adjustable-mesh,desk-mesh");
     const table = page.getByRole("table");
-    const rows = table.locator("tbody tr:not([aria-hidden])");
+    const rows = table.locator("tbody").getByRole("row");
     await expect(rows.first()).toBeVisible();
     const rowsBefore = await rows.count();
 
@@ -42,6 +42,31 @@ test.describe("Compare", () => {
 
     await expect(table.getByRole("cell", { name: /549,000원 \(가장 유리\)/ })).toBeVisible();
     await expect(table.getByText("최대 하중", { exact: true })).toHaveCount(0);
+  });
+
+  test("keeps one table and preserves focus when its container resizes", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/compare?m=adjustable-mesh,desk-mesh,study-fabric");
+    const table = page.getByRole("table");
+    await expect(page.locator("main table")).toHaveCount(1);
+    await expect(modelHeaders(page)).toHaveCount(3);
+
+    const priceHeader = table.getByRole("rowheader", { name: /가격/ });
+    const remove = table.getByRole("button", { name: "조절형 메쉬 체어 비교에서 빼기" });
+    await expect(priceHeader).toBeVisible();
+    await remove.focus();
+
+    // 뷰포트는 그대로 두고 표의 부모 너비만 변경한다.
+    await table.evaluate((element) => { element.parentElement!.style.maxWidth = "650px"; });
+    await expect(priceHeader).toHaveCount(0);
+    await expect(table.getByRole("cell", { name: /가격.*549,000원/ })).toBeVisible();
+    await expect(remove).toBeFocused();
+
+    await table.evaluate((element) => { element.parentElement!.style.maxWidth = "700px"; });
+    await expect(priceHeader).toBeVisible();
+    await expect(remove).toBeFocused();
+    await page.keyboard.press("Tab");
+    await expect(table.getByRole("link", { name: "조절형 메쉬 체어", exact: true })).toBeFocused();
   });
 
   test("removes a chair, syncs the URL, and undoes", async ({ page }) => {
