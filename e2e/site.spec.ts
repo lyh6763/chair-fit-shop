@@ -5,8 +5,8 @@ import { expectNoHorizontalOverflow } from "./helpers";
 const PAGES = [
   "/",
   "/chairs",
-  "/chairs/q1w",
-  "/chairs/dk073w",
+  "/chairs/adjustable-mesh",
+  "/chairs/study-fabric",
   "/fit",
   // 질문 화면은 첫 질문(단일 선택 라디오)만 직접 열 수 있다. 뒤 질문은 첫 미답변 질문으로 돌아간다
   "/fit?step=1",
@@ -14,6 +14,8 @@ const PAGES = [
   "/fit/result?share=1-s-170-60-9-w-lb-80",
   "/compare",
   "/stores",
+  "/cart",
+  "/order-preview",
 ];
 
 // 저장된 프로필이 있어야 그려지는 화면은 프로필을 넣고 검사한다
@@ -36,7 +38,7 @@ test.describe("Site", () => {
     test(`${name} has no serious accessibility violations or horizontal overflow`, async ({ page }) => {
       if (profile) {
         await page.addInitScript(
-          (value) => localStorage.setItem("duoback-fit:profile", value),
+          (value) => localStorage.setItem("chair-fit-shop:profile", value),
           JSON.stringify(SAVED_PROFILE),
         );
       }
@@ -59,13 +61,13 @@ test.describe("Site", () => {
 
   test("resets scroll to the top on navigation", async ({ page }) => {
     // 기존 SPA 프로젝트에서 발견한 문제(페이지 이동 후 스크롤 유지)의 회귀 테스트
-    await page.goto("/chairs/q1w");
+    await page.goto("/chairs/adjustable-mesh");
     const related = page.getByRole("region", { name: "함께 보면 좋은 의자" });
     await related.scrollIntoViewIfNeeded();
     expect(await page.evaluate(() => window.scrollY)).toBeGreaterThan(300);
 
     await related.getByRole("heading", { level: 3 }).first().getByRole("link").click();
-    await expect(page).not.toHaveURL(/\/chairs\/q1w$/);
+    await expect(page).not.toHaveURL(/\/chairs\/adjustable-mesh$/);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
@@ -100,15 +102,15 @@ test.describe("Site", () => {
   });
 
   test("exposes SEO metadata and an OG image for chair pages", async ({ page, request }) => {
-    await page.goto("/chairs/q1w");
-    await expect(page).toHaveTitle("Q1W 메쉬 | DUOBACK Fit");
-    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/chairs\/q1w$/);
+    await page.goto("/chairs/adjustable-mesh");
+    await expect(page).toHaveTitle("조절형 메쉬 체어 | 체어 핏");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/chairs\/adjustable-mesh$/);
 
     const jsonLd = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}");
-    expect(jsonLd).toMatchObject({ "@type": "Product", name: "Q1W 메쉬" });
+    expect(jsonLd).toMatchObject({ "@type": "Product", name: "조절형 메쉬 체어" });
 
     const ogImage = await page.locator('meta[property="og:image"]').getAttribute("content");
-    expect(ogImage).toContain("/chairs/q1w/opengraph-image");
+    expect(ogImage).toContain("/chairs/adjustable-mesh/opengraph-image");
     const image = await request.get(new URL(ogImage!).pathname + new URL(ogImage!).search);
     expect(image.status()).toBe(200);
     expect(image.headers()["content-type"]).toBe("image/png");
@@ -118,15 +120,14 @@ test.describe("Site", () => {
     // JS 실행 전 HTML만 본다. /chairs의 초기 HTML은 Suspense fallback이라 여기서 빠지면 LCP 이미지를 하이드레이션 뒤에야 받는다.
     const chairsHtml = await (await request.get("/chairs")).text();
     const cardImages = [...chairsHtml.matchAll(/<img [^>]*class="aspect-square[^"]*"[^>]*>/g)].map((m) => m[0]);
-    expect(cardImages.length).toBeGreaterThanOrEqual(5);
-    for (const img of cardImages.slice(0, 3)) {
+    expect(cardImages).toHaveLength(3);
+    for (const img of cardImages) {
       expect(img).toContain('fetchPriority="high"');
       expect(img).not.toContain('loading="lazy"');
     }
-    for (const img of cardImages.slice(3)) expect(img).toContain('loading="lazy"');
 
     // LCP가 하나로 정해진 대표 이미지는 <head>에서 높은 우선순위로 preload한다
-    for (const path of ["/", "/chairs/q1w"]) {
+    for (const path of ["/", "/chairs/adjustable-mesh"]) {
       const html = await (await request.get(path)).text();
       const preload = html.match(/<link rel="preload" [^>]*as="image"[^>]*>/)?.[0];
       expect(preload, path).toBeDefined();
@@ -136,7 +137,9 @@ test.describe("Site", () => {
 
   test("lists every chair in the sitemap and hides results from robots", async ({ request }) => {
     const sitemap = await (await request.get("/sitemap.xml")).text();
-    for (const slug of ["q1w", "d3hs", "d2500g", "dk073w", "d043w"]) expect(sitemap).toContain(`/chairs/${slug}`);
+    for (const slug of ["adjustable-mesh", "desk-mesh", "study-fabric"]) expect(sitemap).toContain(`/chairs/${slug}`);
+    expect(sitemap).not.toContain("/order-preview");
+    expect(sitemap).not.toContain("/cart");
     expect(await (await request.get("/robots.txt")).text()).toContain("Disallow: /fit/result");
   });
 });

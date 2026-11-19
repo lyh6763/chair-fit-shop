@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { buttonClass } from "@/components/ui/button";
+import { cartStore } from "@/lib/cart/store";
 import { compareHref } from "@/lib/compare/list";
 import { useCompareList } from "@/lib/compare/store";
+import { SITE_NAME } from "@/lib/metadata";
 
 type NavItem = { href: string; label: string; active: boolean; badge?: number };
 
@@ -16,19 +18,20 @@ export function SiteHeader() {
   const pathname = usePathname();
   const compareList = useCompareList();
   const compareCount = compareList?.length ?? 0;
+  const cartCount = cartStore.useValue()?.reduce((total, { quantity }) => total + quantity, 0) ?? 0;
 
   const items: NavItem[] = [
     { href: "/chairs", label: "의자", active: pathname.startsWith("/chairs") },
     { href: compareHref(compareList ?? []), label: "비교", active: pathname === "/compare", badge: compareCount },
     { href: "/stores", label: "매장", active: pathname === "/stores" },
+    { href: "/cart", label: "장바구니", active: pathname === "/cart" || pathname === "/order-preview", badge: cartCount },
   ];
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-canvas/95 backdrop-blur">
       <div className="page-container flex h-14 items-center justify-between gap-3 md:h-16 lg:h-18">
         <Link href="/" className="flex shrink-0 items-baseline gap-1.5 text-lg font-bold tracking-tight">
-          DUOBACK
-          <span className="font-display text-md font-medium text-primary">Fit</span>
+          {SITE_NAME}
         </Link>
         <nav aria-label="주요 메뉴" className="hidden items-center gap-4 md:flex">
           {items.map((item) => (
@@ -44,7 +47,7 @@ export function SiteHeader() {
       </div>
 
       <nav aria-label="주요 메뉴" className="border-t border-line md:hidden">
-        <ul className="page-container grid h-11 grid-cols-3">
+        <ul className="page-container grid h-11 grid-cols-4">
           {items.map((item) => (
             <li key={item.label} className="grid">
               <NavLink item={item} tab />
@@ -65,12 +68,12 @@ function NavLink({ item, tab = false }: { item: NavItem; tab?: boolean }) {
     <Link
       href={item.href}
       aria-current={item.active ? "page" : undefined}
-      data-compare-nav={item.badge !== undefined ? "" : undefined}
+      data-compare-nav={item.href.startsWith("/compare") ? "" : undefined}
       className={`inline-flex items-center gap-1.5 font-medium ${layout}`}
     >
       {item.label}
       {item.badge ? (
-        <span className="grid size-5 place-items-center rounded-full bg-primary text-xs font-semibold text-inverse tabular-nums">
+        <span className="grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-xs font-semibold text-inverse tabular-nums">
           {item.badge}
           <span className="sr-only">개 담김</span>
         </span>

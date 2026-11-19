@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { CautionNote } from "@/components/brand/caution-note";
 import { CompareButton } from "@/components/compare/compare-toggle";
 import { DataCard } from "@/components/data/data-card";
@@ -11,6 +11,8 @@ import { ReasonList } from "@/components/data/reason-list";
 import { ScoreBadge } from "@/components/data/score-badge";
 import { buttonClass } from "@/components/ui/button";
 import { storesWithModel } from "@/data/stores";
+import { MAX_QUANTITY } from "@/lib/cart/cart";
+import { cartActions } from "@/lib/cart/store";
 import {
   ANGLE_LABEL,
   ARMREST_LABEL,
@@ -25,6 +27,7 @@ import {
 import type { Chair } from "@/lib/chairs/types";
 import { scoreChair } from "@/lib/fit/score";
 import { profileStore } from "@/lib/fit/store";
+import { showToast } from "@/lib/toast";
 import { ColorSwatches } from "./color-swatches";
 
 export function ChairOverview({ chair }: { chair: Chair }) {
@@ -33,6 +36,16 @@ export function ChairOverview({ chair }: { chair: Chair }) {
   const views = chairViews(chair, color);
   const active = views[activeIndex];
   const colorName = chair.colors.find((c) => c.slug === color)?.name ?? "";
+
+  function addToCart(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const quantity = Number(new FormData(event.currentTarget).get("quantity"));
+    if (cartActions.add({ chairSlug: chair.slug, colorSlug: color, quantity })) {
+      showToast("장바구니에 담았어요", { label: "장바구니 보기", href: "/cart" });
+    } else {
+      showToast(`같은 모델과 색상은 ${MAX_QUANTITY}개까지 담을 수 있어요.`);
+    }
+  }
 
   return (
     <div className="grid gap-10 lg:grid-cols-[7fr_5fr] lg:gap-14">
@@ -81,6 +94,25 @@ export function ChairOverview({ chair }: { chair: Chair }) {
           </p>
           <ColorSwatches colors={chair.colors} value={color} onChange={setColor} />
         </div>
+
+        <form onSubmit={addToCart} className="flex flex-wrap items-end gap-3">
+          <label className="grid gap-2 text-sm font-medium">
+            수량
+            <input
+              type="number"
+              name="quantity"
+              min={1}
+              max={MAX_QUANTITY}
+              step={1}
+              defaultValue={1}
+              required
+              className="h-11 w-24 rounded-sm border border-line bg-elevated px-3 text-base tabular-nums"
+            />
+          </label>
+          <button type="submit" className={buttonClass()}>
+            장바구니 담기
+          </button>
+        </form>
 
         <BodyFitSpecs chair={chair} />
         <FitPanel chair={chair} />

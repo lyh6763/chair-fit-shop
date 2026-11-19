@@ -18,7 +18,7 @@ export function CompareTray() {
   const pathname = usePathname();
   const list = useCompareList();
 
-  if (!list || list.length === 0 || pathname === "/compare") return null;
+  if (!list || list.length === 0 || ["/compare", "/cart", "/order-preview"].includes(pathname)) return null;
   return (
     <Suspense fallback={null}>
       <CompareTrayPanel list={list} />
