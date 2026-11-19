@@ -36,6 +36,8 @@ Fit `73e568d`의 상품 스키마에 세 모델을 넣어 검증했다. 키 176c
 
 로컬 검증은 `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run fonts:web -- --check` 순서로 실행한다. Playwright Chromium을 설치한 다음 `npm run test:e2e`로 설문부터 주문 확인까지 검증한다.
 
+GitHub Actions는 기본 브랜치 `feat/recommendation-order-preview`의 푸시와 PR에서 품질 검사와 Lighthouse를 실행한다. 원본 Fit의 기획·화면 자료는 [기획 기록](docs/README.md)에 보관한다.
+
 등록된 의자 상세는 빌드에서 미리 생성한다. 없는 모델은 상세와 공유 이미지 모두 HTTP 404로 응답한다. 상세의 404 화면에는 `noindex`를 붙이고, ‘의자 보기’ 링크로 목록에 돌아갈 수 있다.
 
 Next.js 16.3.8의 프로덕션 서버는 `dynamicParams = false`인 상세 경로가 없는 모델을 거절할 때 `NoFallbackError`를 기록할 수 있다. 이 시제품에서 404 상태 코드와 오류 화면이 그대로 전달되는 것을 확인했다. [Next.js 이슈 #90537](https://github.com/vercel/next.js/issues/90537)

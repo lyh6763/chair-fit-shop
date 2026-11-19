@@ -1,7 +1,8 @@
-# DUOBACK Fit — 리뉴얼 기획
+# DUOBACK Fit 기획 기록
 
-기존 `duoback-react`(React SPA 쇼핑몰)를 다시 설계하는 포트폴리오 프로젝트의 기획 문서다.
-구현 저장소 `duoback-fit`의 기획 문서다. 구현 중 바뀐 결정은 각 문서에 v0.2(구현 중), v0.3(2026-10-15, 성능·공유·프로필 삭제)로 표시했다.
+체어 핏이 설문·비교·상품 상세를 가져온 DUOBACK Fit의 원본 기획을 보관한다. 아래 기록은 `duoback-fit`의 5종 모델과 쇼룸 기능을 설명한다. 가상 상품 3종과 장바구니·주문 확인 체험의 구현 및 실행 방법은 [체어 핏 README](../README.md)에 있다.
+
+DUOBACK Fit은 `duoback-react`의 React SPA 쇼핑몰을 다시 설계한 포트폴리오 프로젝트다. 구현 중 바뀐 결정은 각 문서에 v0.2(구현 중), v0.3(2026-10-15, 성능·공유·프로필 삭제)로 표시했다.
 
 ## 결정 사항 (2026-10-01)
 
@@ -22,8 +23,8 @@
 
 ## 구현 상태 (2026-10-15)
 
-- 배포: https://duoback-fit.vercel.app
+- [DUOBACK Fit 배포 사이트](https://duoback-fit.vercel.app)
 - P0·P1 기능과 P2의 결과 공유 링크를 구현했다. 기능별 상태와 기획과 달라진 범위는 [PRD 6장](01-prd.md#6-우선순위)에 있다.
 - 남은 P2: 매장 체험 예약(목업 폼), 브랜드 소개 페이지
 - Figma 작업 없이 UI 스펙의 토큰을 Tailwind `@theme`으로 옮겨 바로 구현했다(토큰 대응표는 [UI 스펙 5장](04-ui-spec.md)).
-- 성능·접근성 기준과 측정 결과는 저장소 [README](../README.md)의 "성능"에 있다.
+- 원본 프로젝트의 성능·접근성 기준과 측정 결과는 Fit의 배포 기준 README에 있다. [DUOBACK Fit 성능 기록](https://github.com/lyh6763/duoback-fit/blob/73e568d66fb7bf098cf89f61f94158195a5fac96/README.md#성능)
