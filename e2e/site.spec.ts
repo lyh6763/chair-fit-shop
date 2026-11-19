@@ -93,12 +93,21 @@ test.describe("Site", () => {
     expect(await page.evaluate((name) => document.fonts.check(`16px ${name}`, "좌판 높이"), family)).toBe(true);
   });
 
-  test("returns 404 for unknown pages and chairs", async ({ page }) => {
+  test("returns non-indexable 404s and offers a keyboard path back to the chair list", async ({ page, request }) => {
     for (const path of ["/nope", "/chairs/nope"]) {
       const response = await page.goto(path);
       expect(response?.status()).toBe(404);
-      await expect(page.getByRole("heading", { level: 1, name: "찾는 페이지가 없어요" })).toBeVisible();
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute("content", /\bnoindex\b/);
+
+      const main = page.getByRole("main");
+      await expect(main.getByRole("heading", { level: 1, name: "찾는 페이지가 없어요" })).toBeVisible();
+      await main.getByRole("link", { name: "의자 보기", exact: true }).press("Enter");
+      await expect(page).toHaveURL(/\/chairs$/);
+      await expect(main.getByRole("heading", { level: 1, name: "의자", exact: true })).toBeVisible();
     }
+
+    const missingImage = await request.get("/chairs/nope/opengraph-image");
+    expect(missingImage.status()).toBe(404);
   });
 
   test("exposes SEO metadata and an OG image for chair pages", async ({ page, request }) => {

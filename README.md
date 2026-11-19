@@ -33,3 +33,7 @@ Node.js 24에서 `node --test tests/catalog.test.mjs`로 모델 ID, 색상 ID와
 Fit `73e568d`의 상품 스키마에 세 모델을 넣어 검증했다. 키 176cm·72kg의 사무용 예시는 예산 60만 원에서 `desk-mesh`, 100만 원에서 `adjustable-mesh`가 1위였다. 키 158cm·47kg의 학습용 예시는 `study-fabric`이 1위였다. 같은 데이터로 Fit 비교표의 가격 행을 만들었다. 장바구니 데이터 예시로 `desk-mesh` 화이트 2개와 `study-fabric` 블루 1개를 조회하면 합계는 1,427,000원이다.
 
 로컬 검증은 `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run fonts:web -- --check` 순서로 실행한다. Playwright Chromium을 설치한 다음 `npm run test:e2e`로 설문부터 주문 확인까지 검증한다.
+
+등록된 의자 상세는 빌드에서 미리 생성한다. 없는 모델은 상세와 공유 이미지 모두 HTTP 404로 응답한다. 상세의 404 화면에는 `noindex`를 붙이고, ‘의자 보기’ 링크로 목록에 돌아갈 수 있다.
+
+Next.js 16.3.8의 프로덕션 서버는 `dynamicParams = false`인 상세 경로가 없는 모델을 거절할 때 `NoFallbackError`를 기록할 수 있다. 이 시제품에서 404 상태 코드와 오류 화면이 그대로 전달되는 것을 확인했다. [Next.js 이슈 #90537](https://github.com/vercel/next.js/issues/90537)
