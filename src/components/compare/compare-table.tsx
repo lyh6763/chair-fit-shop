@@ -170,7 +170,7 @@ function ChairHeader({ chair }: { chair: Chair }) {
 }
 
 function DiffDot() {
-  return <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-clay-400" />;
+  return <span aria-hidden="true" className="size-1.5 shrink-0 rounded-full bg-data-diff" />;
 }
 
 function GroupTitleRow({ className, colSpan, title }: { className: string; colSpan: number; title: string }) {
@@ -223,7 +223,7 @@ function RowLabel({ modelColumns, label, diff = false }: { modelColumns: number;
 }
 
 function RowView({ row, modelColumns, emptySlots }: { row: CompareRow; modelColumns: number; emptySlots: number }) {
-  const tone = row.diff ? "bg-paper-50" : "";
+  const tone = row.diff ? "bg-data-diff-bg" : "";
   return (
     <>
       <RowLabel modelColumns={modelColumns} label={row.label} diff={row.diff} />
