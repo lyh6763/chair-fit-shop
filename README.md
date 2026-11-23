@@ -42,4 +42,4 @@ GitHub Actions는 기본 브랜치 `feat/recommendation-order-preview`의 푸시
 
 등록된 의자 상세는 빌드에서 미리 생성한다. 없는 모델은 상세와 공유 이미지 모두 HTTP 404로 응답한다. 상세의 404 화면에는 `noindex`를 붙이고, ‘의자 보기’ 링크로 목록에 돌아갈 수 있다.
 
-Next.js 16.3.8의 프로덕션 서버는 `dynamicParams = false`인 상세 경로가 없는 모델을 거절할 때 `NoFallbackError`를 기록할 수 있다. 이 시제품에서 404 상태 코드와 오류 화면이 그대로 전달되는 것을 확인했다. [Next.js 이슈 #90537](https://github.com/vercel/next.js/issues/90537)
+Next.js 16.3.8의 프로덕션 서버는 `dynamicParams = false`인 상세 경로가 없는 모델을 거절할 때 `NoFallbackError`를 기록했다. 404 상태 코드와 오류 화면은 그대로 전달됐다. [Next.js 이슈 #90537](https://github.com/vercel/next.js/issues/90537) 보안 경고 때문에 16.4.6으로 올린 뒤(2026-11-23) `next start`로 없는 모델 상세와 공유 이미지를 요청하면 둘 다 404였고, 이 로그는 남지 않았다.
