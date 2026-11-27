@@ -112,7 +112,7 @@ test.describe("Site", () => {
 
   test("exposes SEO metadata and an OG image for chair pages", async ({ page, request }) => {
     await page.goto("/chairs/adjustable-mesh");
-    await expect(page).toHaveTitle("조절형 메쉬 체어 | 체어 핏");
+    await expect(page).toHaveTitle("조절형 메쉬 체어 | chair-fit");
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/chairs\/adjustable-mesh$/);
 
     const jsonLd = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? "{}");

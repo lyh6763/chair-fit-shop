@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-export const SITE_NAME = "체어 핏";
+export const SITE_NAME = "chair-fit";
 export const DEFAULT_TITLE = `${SITE_NAME} — 내 몸에 맞는 의자 찾기`;
 export const DEFAULT_DESCRIPTION = "내 몸에 맞는 의자를 찾고, 색상과 수량을 골라 주문 내용을 확인해 보세요.";
 

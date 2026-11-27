@@ -5,10 +5,10 @@ describe("pageMetadata", () => {
   it("keeps the shared Open Graph fields that a page-level openGraph would otherwise drop", () => {
     const meta = pageMetadata({ title: "의자", description: "설명", path: "/chairs" });
     expect(meta.openGraph).toMatchObject({
-      siteName: "체어 핏",
+      siteName: "chair-fit",
       locale: "ko_KR",
       type: "website",
-      title: "의자 | 체어 핏",
+      title: "의자 | chair-fit",
       url: "/chairs",
     });
     expect(meta.alternates).toEqual({ canonical: "/chairs" });
