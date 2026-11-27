@@ -1,4 +1,4 @@
-# 체어 핏
+# chair-fit
 
 의자 추천부터 주문 내용 확인까지 체험하는 Next.js 시제품이다. 6개 질문에 답하면 추천 모델과 이유를 볼 수 있다. 최대 3개 모델을 비교하고, 상세 화면에서 색상과 수량을 정해 장바구니에 담는다. 주문 내용 확인 화면에서 선택한 옵션과 합계를 확인한다. 실결제와 주문 제출 기능은 범위 밖이다.
 
@@ -38,7 +38,7 @@ Fit `73e568d`의 상품 스키마에 세 모델을 넣어 검증했다. 키 176c
 
 로컬 검증은 `npm run lint`, `npm run typecheck`, `npm test`, `npm run build`, `npm run fonts:web -- --check` 순서로 실행한다. Playwright Chromium을 설치한 다음 `npm run test:e2e`로 설문부터 주문 확인까지 검증한다.
 
-GitHub Actions는 기본 브랜치 `feat/recommendation-order-preview`의 푸시와 PR에서 품질 검사와 Lighthouse를 실행한다. 원본 Fit의 기획·화면 자료는 [기획 기록](docs/README.md)에 보관한다.
+GitHub Actions는 기본 브랜치 `main`의 푸시와 PR에서 품질 검사와 Lighthouse를 실행한다. 원본 Fit의 기획·화면 자료는 [기획 기록](docs/README.md)에 보관한다.
 
 등록된 의자 상세는 빌드에서 미리 생성한다. 없는 모델은 상세와 공유 이미지 모두 HTTP 404로 응답한다. 상세의 404 화면에는 `noindex`를 붙이고, ‘의자 보기’ 링크로 목록에 돌아갈 수 있다.
 

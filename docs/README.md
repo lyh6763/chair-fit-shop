@@ -1,6 +1,6 @@
 # DUOBACK Fit 기획 기록
 
-체어 핏이 설문·비교·상품 상세를 가져온 DUOBACK Fit의 원본 기획을 보관한다. 아래 기록은 `duoback-fit`의 5종 모델과 쇼룸 기능을 설명한다. 가상 상품 3종과 장바구니·주문 확인 체험의 구현 및 실행 방법은 [체어 핏 README](../README.md)에 있다.
+chair-fit이 설문·비교·상품 상세를 가져온 DUOBACK Fit의 원본 기획을 보관한다. 아래 기록은 `duoback-fit`의 5종 모델과 쇼룸 기능을 설명한다. 가상 상품 3종과 장바구니·주문 확인 체험의 구현 및 실행 방법은 [chair-fit README](../README.md)에 있다.
 
 DUOBACK Fit은 `duoback-react`의 React SPA 쇼핑몰을 다시 설계한 포트폴리오 프로젝트다. 구현 중 바뀐 결정은 각 문서에 v0.2(구현 중), v0.3(2026-10-15, 성능·공유·프로필 삭제)로 표시했다.
 
